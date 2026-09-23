@@ -2,13 +2,12 @@ import { useState } from 'react';
 import USUARIOS_MOCK from '../../data/usuariosMock';
 import './Login.css';
 import logo from '../../Imagenes/logo.jpg';
-import { UserIconLogin, LockIcon, EyeIcon, EyeOffIcon } from '../Icons/icons';
+import { UserIconLogin, LockIcon, EyeIcon, EyeOffIcon } from '../../components/Icons/icons';
 
 const LONGITUD_MIN_CONTRASENA = 8;
 const LONGITUD_MAX_CONTRASENA = 12;
 
 // Reglas de la contraseña: mínimo 8 posiciones, 1 mayúscula, 1 minúscula,
-// 1 dígito y 1 símbolo especial.
 // 1 dígito y 1 símbolo especial.
 function validarFormatoContrasena(valor) {
   if (valor.length < LONGITUD_MIN_CONTRASENA) return `La contraseña debe tener al menos ${LONGITUD_MIN_CONTRASENA} caracteres.`;
@@ -145,7 +144,3 @@ function Login({ onLoginSuccess }) {
 }
 
 export default Login;
-
-
-//<img src={logo} alt="Global Express" />
-//UserIconLogin

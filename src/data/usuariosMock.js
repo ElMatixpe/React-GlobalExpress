@@ -1,5 +1,5 @@
 // Usuarios de prueba mientras no está conectado el backend (Spring Boot + MySQL).
-// Cuando conectes la base de datos, este archivo ya no se usa: Login.js
+// Cuando conectes la base de datos, este archivo ya no se usa: pages/Login/Login.js
 // llamará al endpoint real en vez de validar contra este arreglo.
 
 const USUARIOS_MOCK = [
