@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import Sidebar from '../Layout/Sidebar';
-import Inicio from '../Inicio/Inicio';
-import Footer from '../Footer/Footer';
-import ModuloPendiente from '../ModuloPendiente/ModuloPendiente';
-import { UserPlusIcon, ChevronDownIcon } from '../Icons/icons';
+import Sidebar from '../../components/Layout/Sidebar';
+import Inicio from '../../components/Inicio/Inicio';
+import Footer from '../../components/Footer/Footer';
+import ModuloPendiente from '../../components/ModuloPendiente/ModuloPendiente';
+import { UserPlusIcon, ChevronDownIcon } from '../../components/Icons/icons';
 import './Home.css';
 
 const TITULOS = {
