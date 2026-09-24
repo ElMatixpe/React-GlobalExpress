@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Sidebar from '../../components/Layout/Sidebar';
 import Inicio from '../../components/Inicio/Inicio';
+import Usuarios from '../../components/Usuarios/Usuarios';
 import Footer from '../../components/Footer/Footer';
 import ModuloPendiente from '../../components/ModuloPendiente/ModuloPendiente';
 import { UserPlusIcon, ChevronDownIcon } from '../../components/Icons/icons';
@@ -19,6 +20,7 @@ function Home({ usuario, onCerrarSesion }) {
 
   const renderContenido = () => {
     if (seccionActiva === 'inicio') return <Inicio usuario={usuario} />;
+    if (seccionActiva === 'usuarios') return <Usuarios />;
     return <ModuloPendiente nombre={TITULOS[seccionActiva]} />;
   };
 

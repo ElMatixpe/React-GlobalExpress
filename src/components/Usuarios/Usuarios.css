@@ -1,0 +1,105 @@
+.users {
+  max-width: 95%;
+  margin: 0 auto;
+  padding: 0.5rem 0 2rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.users-title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #1a1a1a;
+}
+
+.users-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.users-button {
+  background-color: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: not-allowed;
+  opacity: 0.55;
+  white-space: nowrap;
+}
+
+.users-table-container {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.users-table thead {
+  background-color: #f5f5f5;
+}
+
+.users-table th,
+.users-table td {
+  text-align: left;
+  padding: 0.75rem 1rem;
+}
+
+.users-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #555;
+}
+
+.users-table tbody tr + tr {
+  border-top: 1px solid #eee;
+}
+
+.users-role {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background-color: #eee;
+  color: #333;
+}
+
+.users-role-administrador {
+  background-color: #d7fb3c;
+  color: #1a1a1a;
+}
+
+.users-role-cajero {
+  background-color: #e8f0fe;
+  color: #1a56db;
+}
+
+.users-note {
+  margin-top: 1rem;
+  font-size: 0.82rem;
+  color: #888;
+}
+
+@media (max-width: 600px) {
+  .users-header {
+    flex-direction: column;
+  }
+}
