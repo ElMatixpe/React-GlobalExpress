@@ -1,4 +1,4 @@
-import './Modal_Footer.css';
+import './Modales.css';
 
 function Modal({ titulo, onCerrar, children }) {
   const detenerPropagacion = (e) => e.stopPropagation();

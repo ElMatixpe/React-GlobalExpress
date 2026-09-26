@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import USUARIOS_MOCK from '../../data/usuariosMock';
-import Modal from '../Modales/Modal_Footer';
+import Modal from '../Modales/Modales';
 import './Usuarios.css';
 
 function Usuarios() {

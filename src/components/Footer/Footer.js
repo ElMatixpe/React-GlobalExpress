@@ -1,6 +1,6 @@
 import { PhoneIcon, MailIcon } from '../Icons/icons';
 import './Footer.css';
-import Modal from '../Modales/Modal_Footer';
+import Modal from '../Modales/Modales';
 import { useState } from 'react';
 
 const TELEFONO_SOPORTE = '+51 977 955 999';
