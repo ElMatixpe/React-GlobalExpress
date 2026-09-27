@@ -26,7 +26,7 @@
 }
 
 .users-button {
-  background-color: #1a1a1a;
+  background-color: #3fae5c;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -263,12 +263,12 @@
 }
 
 .users-btn-primario {
-  background-color: #1a1a1a;
+  background-color: #3fae5c;
   color: #fff;
 }
 
 .users-btn-primario:hover {
-  background-color: #333;
+  background-color: #359a4f;
 }
 
 .users-btn-secundario {
