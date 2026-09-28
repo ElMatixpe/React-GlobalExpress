@@ -78,6 +78,7 @@ function Usuarios() {
         <table className="users-table">
           <thead>
             <tr>
+              <th>ID</th>
               <th>Nombre</th>
               <th>Usuario</th>
               <th>Rol</th>
@@ -89,6 +90,7 @@ function Usuarios() {
               const esUltimaFila = index === USUARIOS_MOCK.length - 1;
               return (
               <tr key={u.usuario}>
+                <td>{u.id}</td>
                 <td>{u.nombre}</td>
                 <td>{u.usuario}</td>
                 <td>
