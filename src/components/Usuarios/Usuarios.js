@@ -81,6 +81,7 @@ function Usuarios() {
               <th>ID</th>
               <th>Nombre</th>
               <th>Usuario</th>
+              <th>Contraseña</th>
               <th>Rol</th>
               <th className="users-col-acciones">Acciones</th>
             </tr>
@@ -93,6 +94,7 @@ function Usuarios() {
                 <td>{u.id}</td>
                 <td>{u.nombre}</td>
                 <td>{u.usuario}</td>
+                <td aria-label="Contraseña oculta">{'*'.repeat(u.contrasena?.length || 8)}</td>
                 <td>
                   <span className={`users-role users-role-${u.rol.toLowerCase()}`}>
                     {u.rol}
