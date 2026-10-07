@@ -33,9 +33,12 @@
   padding: 0.6rem 1rem;
   font-size: 0.85rem;
   font-weight: 600;
-  cursor: not-allowed;
-  opacity: 0.55;
+  cursor: pointer;
   white-space: nowrap;
+}
+
+.users-button:hover {
+  background-color: #359a4f;
 }
 
 .users-table-container {
@@ -293,4 +296,71 @@
   .users-header {
     flex-direction: column;
   }
+}
+
+/* Buscador por ID */
+.users-buscador {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: #ececf5;
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  max-width: 420px;
+  margin-bottom: 1.4rem;
+}
+
+.users-buscador input {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 0.88rem;
+  color: #333;
+}
+
+.users-buscador input::placeholder {
+  color: #8a8a9a;
+}
+
+.users-vacio {
+  text-align: center;
+  color: #888;
+  padding: 1.5rem;
+}
+
+/* Campo de contraseña con ojo */
+.users-contrasena-wrapper {
+  position: relative;
+  display: flex;
+}
+
+.users-contrasena-wrapper input {
+  flex: 1;
+  padding-right: 2.6rem;
+}
+
+.users-toggle-contrasena {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.users-ayuda {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.users-error {
+  margin: 0;
+  color: #c0392b;
+  font-size: 0.85rem;
+  font-weight: 600;
 }

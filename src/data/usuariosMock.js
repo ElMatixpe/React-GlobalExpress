@@ -7,7 +7,7 @@ const USUARIOS_MOCK = [
     id: 1,
     usuario: 'admin',
     contrasena: 'Admin#2026',
-    nombre: 'Admin123',
+    nombre: 'Gustavo Choqque',
     rol: 'Administrador',
   },
   {

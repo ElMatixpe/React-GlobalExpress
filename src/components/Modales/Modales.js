@@ -1,11 +1,15 @@
 import './Modales.css';
 
-function Modal({ titulo, onCerrar, children }) {
+function Modal({ titulo, onCerrar, ancho, children }) {
   const detenerPropagacion = (e) => e.stopPropagation();
 
   return (
     <div className="modal-fondo" onClick={onCerrar}>
-      <div className="modal-caja" onClick={detenerPropagacion}>
+      <div
+        className="modal-caja"
+        style={ancho ? { maxWidth: ancho } : undefined}
+        onClick={detenerPropagacion}
+      >
         <div className="modal-encabezado">
           <h3>{titulo}</h3>
           <button className="modal-cerrar" onClick={onCerrar} type="button" aria-label="Cerrar">
@@ -19,3 +23,4 @@ function Modal({ titulo, onCerrar, children }) {
 }
 
 export default Modal;
+

@@ -1,25 +1,11 @@
 import { useState } from 'react';
-import USUARIOS_MOCK from '../../data/usuariosMock';
+import { validarFormatoContrasena, LONGITUD_MAX_CONTRASENA } from '../../utils/contrasena';
+import { nombreUsuario, sinEspacios } from '../../utils/validaciones';
 import './Login.css';
 import logo from '../../Imagenes/logo.jpg';
 import { UserIconLogin, LockIcon, EyeIcon, EyeOffIcon } from '../../components/Icons/icons';
 
-const LONGITUD_MIN_CONTRASENA = 8;
-const LONGITUD_MAX_CONTRASENA = 12;
-
-// Reglas de la contraseña: mínimo 8 posiciones, 1 mayúscula, 1 minúscula,
-// 1 dígito y 1 símbolo especial.
-function validarFormatoContrasena(valor) {
-  if (valor.length < LONGITUD_MIN_CONTRASENA) return `La contraseña debe tener al menos ${LONGITUD_MIN_CONTRASENA} caracteres.`;
-  if (valor.length > LONGITUD_MAX_CONTRASENA) return `La contraseña no debe superar los ${LONGITUD_MAX_CONTRASENA} caracteres.`;
-  if (!/[A-Z]/.test(valor)) return 'La contraseña debe incluir al menos una letra mayúscula.';
-  if (!/[a-z]/.test(valor)) return 'La contraseña debe incluir al menos una letra minúscula.';
-  if (!/\d/.test(valor)) return 'La contraseña debe incluir al menos un dígito.';
-  if (!/[^A-Za-z0-9]/.test(valor)) return 'La contraseña debe incluir al menos un símbolo especial.';
-  return '';
-}
-
-function Login({ onLoginSuccess }) {
+function Login({ onLoginSuccess, usuarios }) {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
@@ -54,7 +40,7 @@ function Login({ onLoginSuccess }) {
 
       await new Promise((resolve) => setTimeout(resolve, 400));
 
-      const encontrado = USUARIOS_MOCK.find(
+      const encontrado = usuarios.find(
         (u) => u.usuario.toLowerCase() === usuario.trim().toLowerCase() && u.contrasena === contrasena
       );
 
@@ -100,7 +86,7 @@ function Login({ onLoginSuccess }) {
               type="text"
               className="login-input"
               value={usuario}
-              onChange={(e) => setUsuario(e.target.value)}
+              onChange={(e) => setUsuario(nombreUsuario(e.target.value))}
               autoComplete="username"
             />
 
@@ -113,7 +99,7 @@ function Login({ onLoginSuccess }) {
                 type={mostrarContrasena ? 'text' : 'password'}
                 className="login-input login-input-contrasena"
                 value={contrasena}
-                onChange={(e) => setContrasena(e.target.value)}
+                onChange={(e) => setContrasena(sinEspacios(e.target.value))}
                 maxLength={LONGITUD_MAX_CONTRASENA}
                 autoComplete="current-password"
               />

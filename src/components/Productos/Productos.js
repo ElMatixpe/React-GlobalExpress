@@ -1,18 +1,19 @@
 import { useMemo, useState } from 'react';
-import PRODUCTOS_MOCK from '../../data/productosMock';
 import Modal from '../Modales/Modales';
 import { SearchIcon } from '../Icons/icons';
+import { textoProducto, soloDecimal, codigoProducto } from '../../utils/validaciones';
 import './Productos.css';
 
 const PRODUCTO_VACIO = { nombre: '', marca: '', estado: 'Disponible', precio: '' };
 
-function Productos() {
-  const [productos, setProductos] = useState(PRODUCTOS_MOCK);
+// El listado de productos vive en Home para compartirlo con el módulo de Ventas.
+function Productos({ productos, setProductos }) {
   const [busqueda, setBusqueda] = useState('');
 
   const [modalAbierto, setModalAbierto] = useState(false);
   const [productoEditar, setProductoEditar] = useState(null); // null = "nuevo producto"
   const [form, setForm] = useState(PRODUCTO_VACIO);
+  const [error, setError] = useState('');
 
   const productosFiltrados = useMemo(() => {
     const texto = busqueda.trim().toLowerCase();
@@ -23,6 +24,7 @@ function Productos() {
   const abrirNuevo = () => {
     setProductoEditar(null);
     setForm(PRODUCTO_VACIO);
+    setError('');
     setModalAbierto(true);
   };
 
@@ -32,8 +34,9 @@ function Productos() {
       nombre: producto.nombre,
       marca: producto.marca,
       estado: producto.estado,
-      precio: producto.precio,
+      precio: String(producto.precio),
     });
+    setError('');
     setModalAbierto(true);
   };
 
@@ -45,17 +48,31 @@ function Productos() {
 
   const actualizarCampo = (campo, valor) => {
     setForm((actual) => ({ ...actual, [campo]: valor }));
+    setError('');
   };
 
   // Por ahora solo visual (mock): guarda en el estado local, no hay backend todavía.
   const guardarProducto = (e) => {
     e.preventDefault();
 
+    const nombre = form.nombre.trim();
+    const marca = form.marca.trim();
+    const precio = Number(form.precio);
+
+    if (!nombre || !marca) {
+      setError('El nombre y la marca son obligatorios.');
+      return;
+    }
+    if (!form.precio || Number.isNaN(precio) || precio <= 0) {
+      setError('Ingresa un precio válido mayor a 0 (ej. 5 o 5.50).');
+      return;
+    }
+
     if (productoEditar) {
       setProductos((actual) =>
         actual.map((p) =>
           p.codigo === productoEditar.codigo
-            ? { ...p, nombre: form.nombre, marca: form.marca, estado: form.estado, precio: Number(form.precio) || 0 }
+            ? { ...p, nombre, marca, estado: form.estado, precio }
             : p
         )
       );
@@ -66,10 +83,10 @@ function Productos() {
         ...actual,
         {
           codigo: nuevoCodigo,
-          nombre: form.nombre,
-          marca: form.marca,
+          nombre,
+          marca,
           estado: form.estado,
-          precio: Number(form.precio) || 0,
+          precio,
         },
       ]);
     }
@@ -94,7 +111,7 @@ function Productos() {
           type="text"
           placeholder="Búsqueda por Id de Producto"
           value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
+          onChange={(e) => setBusqueda(codigoProducto(e.target.value))}
         />
       </div>
 
@@ -150,7 +167,7 @@ function Productos() {
           titulo={productoEditar ? 'Editar producto' : 'Registrar nuevo producto'}
           onCerrar={cerrarModal}
         >
-          <form className="productos-form" onSubmit={guardarProducto}>
+          <form className="productos-form" onSubmit={guardarProducto} noValidate>
             <div className="productos-form-grid">
               <label className="productos-campo">
                 <span>Nombre del producto</span>
@@ -158,7 +175,7 @@ function Productos() {
                   type="text"
                   placeholder="Ingrese Nombre:"
                   value={form.nombre}
-                  onChange={(e) => actualizarCampo('nombre', e.target.value)}
+                  onChange={(e) => actualizarCampo('nombre', textoProducto(e.target.value))}
                   required
                 />
               </label>
@@ -169,7 +186,7 @@ function Productos() {
                   type="text"
                   placeholder="Ej . CocaCola"
                   value={form.marca}
-                  onChange={(e) => actualizarCampo('marca', e.target.value)}
+                  onChange={(e) => actualizarCampo('marca', textoProducto(e.target.value, 30))}
                   required
                 />
               </label>
@@ -187,16 +204,20 @@ function Productos() {
               <label className="productos-campo">
                 <span>Precio</span>
                 <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="0"
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="0.00"
                   value={form.precio}
-                  onChange={(e) => actualizarCampo('precio', e.target.value)}
-                  required
+                  onChange={(e) => actualizarCampo('precio', soloDecimal(e.target.value))}
                 />
               </label>
             </div>
+
+            {error && (
+              <p className="productos-error" role="alert">
+                {error}
+              </p>
+            )}
 
             <div className="productos-dialog-botones">
               <button className="productos-btn-cancelar" type="button" onClick={cerrarModal}>
