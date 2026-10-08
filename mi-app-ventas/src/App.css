@@ -1,0 +1,252 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+}
+
+body {
+  background-color: #f4f5f7;
+}
+
+.layout-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f4f5f7;
+  color: #333;
+}
+
+/* SIDEBAR ROJO GLOBAL EXPRESS */
+.sidebar {
+  width: 250px;
+  background-color: #d32f2f;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.brand-section {
+  padding: 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brand-logo-box {
+  width: 42px;
+  height: 42px;
+  background-color: #555;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.brand-text h1 {
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+}
+
+.brand-text span {
+  font-size: 12px;
+  color: #ffcdd2;
+}
+
+.menu-list {
+  list-style: none;
+  margin-top: 15px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 14px 22px;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.menu-item.active {
+  background-color: #e5b800; /* Amarillo institucional */
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.logout-btn {
+  padding: 20px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+/* MAIN WRAPPER */
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.header {
+  background-color: #ffffff;
+  height: 65px;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.user-name { font-size: 14px; font-weight: 700; }
+.user-role { font-size: 12px; color: #777; }
+
+.content-container {
+  padding: 25px 35px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.module-title { font-size: 20px; font-weight: 700; color: #2c3e50; }
+.module-subtitle { font-size: 13px; color: #6c757d; margin-bottom: 20px; }
+
+/* GRID DE TARJETAS (CARDS) */
+.indicators-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.card-indicator {
+  background: white;
+  border-radius: 10px;
+  padding: 20px 16px;
+  border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.card-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.icon-blue { background-color: #e8f0fe; color: #1a73e8; }
+.icon-orange { background-color: #fef0e6; color: #f26522; }
+.icon-purple { background-color: #f3e8ff; color: #9333ea; }
+.icon-yellow { background-color: #fef9c3; color: #ca8a04; }
+
+.card-title { font-size: 13px; font-weight: 700; min-height: 36px; display: flex; align-items: center; }
+.card-desc { font-size: 11px; color: #718096; margin-bottom: 16px; min-height: 28px; line-height: 1.3; }
+
+.btn-indigo {
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #3f51b5;
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-indigo:hover {
+  background-color: #303f9f;
+}
+
+/* PREVIEW PDF */
+.preview-section {
+  background: white;
+  border-radius: 10px;
+  padding: 24px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-download-pdf {
+  background-color: #3f51b5;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pdf-paper {
+  border: 1px solid #e2e8f0;
+  padding: 25px;
+  background-color: #ffffff;
+}
+
+.pdf-company-name { font-size: 14px; font-weight: 800; }
+.pdf-report-type { font-size: 13px; font-weight: 700; color: #4a5568; margin-top: 6px; }
+.pdf-meta-date { font-size: 11px; color: #a0aec0; margin-bottom: 15px; }
+
+/* TABLA EN AMARILLO INSTITUCIONAL */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th {
+  background-color: #e5b800; /* Encabezado amarillo institucional */
+  color: #1a1a1a;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 14px;
+  text-align: left;
+}
+
+.custom-table td {
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #4a5568;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.badge-positive { color: #2e7d32; font-weight: 700; }
