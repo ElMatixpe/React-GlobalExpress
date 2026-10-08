@@ -1,0 +1,16 @@
+# React / Node
+node_modules/
+build/
+dist/
+npm-debug.log*
+
+# Java / Spring Boot / Maven
+target/
+*.class
+
+# VS Code
+.vscode/
+
+# Sistema
+.DS_Store
+Thumbs.db
