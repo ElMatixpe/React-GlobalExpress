@@ -1,0 +1,192 @@
+.reportes {
+  max-width: 95%;
+  margin: 0 auto;
+  padding: 0.5rem 0 2rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.reportes-titulo {
+  margin: 0 0 0.25rem;
+  font-size: 1.3rem;
+  color: #1a1a1a;
+}
+
+.reportes-subtitulo {
+  margin: 0 0 1.6rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Tarjetas de indicadores */
+.reportes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.reportes-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #fff;
+  border: 2px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 1.3rem 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.reportes-card-activa {
+  border-color: #4c4fe0;
+  box-shadow: 0 2px 8px rgba(76, 79, 224, 0.2);
+}
+
+.reportes-card-icono {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.8rem;
+}
+
+.reportes-icono-azul { background-color: #e8f0fe; }
+.reportes-icono-naranja { background-color: #fef0e6; }
+.reportes-icono-morado { background-color: #f3e8ff; }
+.reportes-icono-amarillo { background-color: #fef9c3; }
+
+.reportes-card-titulo {
+  margin: 0;
+  min-height: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.reportes-card-desc {
+  margin: 0.4rem 0 1rem;
+  min-height: 2.2rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: #666;
+}
+
+.reportes-card .reportes-btn { margin-top: auto; width: 100%; }
+
+.reportes-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #4c4fe0;
+  color: #fff;
+  padding: 0.55rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reportes-btn:hover { background-color: #3f42c7; }
+
+/* Vista previa del documento */
+.reportes-preview {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  scroll-margin-top: 1rem;
+}
+
+.reportes-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.reportes-preview-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #1a1a1a;
+}
+
+.reportes-btn-descarga { background-color: #3fae5c; }
+.reportes-btn-descarga:hover { background-color: #359a4f; }
+
+.reportes-pdf {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: #fff;
+  padding: 1.6rem;
+}
+
+.reportes-pdf-empresa { font-size: 0.95rem; font-weight: 800; color: #1a1a1a; }
+.reportes-pdf-tipo { margin-top: 0.3rem; font-size: 0.85rem; font-weight: 700; color: #3c4043; }
+.reportes-pdf-meta { margin-bottom: 1.2rem; font-size: 0.75rem; color: #777; }
+
+.reportes-tabla-scroll { overflow-x: auto; }
+
+.reportes-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.reportes-tabla th {
+  background-color: #eedf3a;
+  color: #1a1a1a;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.7rem 0.9rem;
+}
+
+.reportes-tabla td {
+  padding: 0.7rem 0.9rem;
+  font-size: 0.8rem;
+  color: #3c4043;
+  border-bottom: 1px solid #eee;
+}
+
+.reportes-positivo { color: #188038 !important; font-weight: 700; }
+.reportes-negativo { color: #c0392b !important; font-weight: 700; }
+
+@media (max-width: 1000px) {
+  .reportes-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .reportes-grid { grid-template-columns: 1fr; }
+  .reportes-preview-header { flex-direction: column; align-items: stretch; }
+}
+
+/* Al imprimir / guardar como PDF solo sale el documento, sin menú ni tarjetas */
+@media print {
+  body * { visibility: hidden; }
+
+  .reportes-pdf,
+  .reportes-pdf * { visibility: visible; }
+
+  .reportes-pdf {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none;
+    padding: 0;
+  }
+
+  .reportes-tabla th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

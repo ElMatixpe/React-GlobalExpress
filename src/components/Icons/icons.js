@@ -110,3 +110,31 @@ export const EyeOffIcon = ({ color = '#c0392b', size = 18 }) => (
     <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
+
+// Iconos del módulo de Reportes
+export const TrendIcon = ({ color = '#1a73e8', size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+    <path d="M3 17 9 11l4 4 8-8" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M15 7h6v6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+export const BarsIcon = ({ color = '#9333ea', size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+    <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+export const CoinIcon = ({ color = '#ca8a04', size = 22 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.5.7-2.5 1.8 0 2.4 5 1.2 5 3.7 0 1.1-1.1 1.8-2.5 1.8-1.2 0-2.1-.5-2.6-1.3M12 6.5V8m0 8v1.5" strokeLinecap="round" />
+  </svg>
+);
+
+export const FileIcon = ({ color = '#fff', size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" strokeLinejoin="round" />
+    <path d="M14 3v5h5M9 13h6M9 17h6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);

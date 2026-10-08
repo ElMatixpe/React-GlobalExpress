@@ -3,6 +3,7 @@ import Sidebar from '../../components/Layout/Sidebar';
 import Inicio from '../../components/Inicio/Inicio';
 import Usuarios from '../../components/Usuarios/Usuarios';
 import Ventas from '../../components/Ventas/Ventas';
+import Reportes from '../../components/Reportes/Reportes';
 import Productos from '../../components/Productos/Productos';
 import Footer from '../../components/Footer/Footer';
 import ModuloPendiente from '../../components/ModuloPendiente/ModuloPendiente';
@@ -34,6 +35,7 @@ function Home({ usuario, onCerrarSesion, usuarios, setUsuarios }) {
       return (
         <Ventas usuario={usuario} ventas={ventas} setVentas={setVentas} productos={productos} />
       );
+    if (seccionActiva === 'reportes') return <Reportes usuario={usuario} />;
     return <ModuloPendiente nombre={TITULOS[seccionActiva]} />;
   };
 
