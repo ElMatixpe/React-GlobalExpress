@@ -2,18 +2,21 @@ import { useMemo, useState } from 'react';
 import Modal from '../Modales/Modales';
 import { SearchIcon } from '../Icons/icons';
 import { textoProducto, soloDecimal, codigoProducto } from '../../utils/validaciones';
+import { peticion } from '../../services/api';
+import { desdeApiProducto } from '../../services/productosApi';
 import './Productos.css';
 
 const PRODUCTO_VACIO = { nombre: '', marca: '', estado: 'Disponible', precio: '' };
 
 // El listado de productos vive en Home para compartirlo con el módulo de Ventas.
-function Productos({ productos, setProductos }) {
+function Productos({ productos, setProductos, cargando, errorCarga, onReintentar }) {
   const [busqueda, setBusqueda] = useState('');
 
   const [modalAbierto, setModalAbierto] = useState(false);
   const [productoEditar, setProductoEditar] = useState(null); // null = "nuevo producto"
   const [form, setForm] = useState(PRODUCTO_VACIO);
   const [error, setError] = useState('');
+  const [guardando, setGuardando] = useState(false);
 
   const productosFiltrados = useMemo(() => {
     const texto = busqueda.trim().toLowerCase();
@@ -51,8 +54,7 @@ function Productos({ productos, setProductos }) {
     setError('');
   };
 
-  // Por ahora solo visual (mock): guarda en el estado local, no hay backend todavía.
-  const guardarProducto = (e) => {
+  const guardarProducto = async (e) => {
     e.preventDefault();
 
     const nombre = form.nombre.trim();
@@ -68,30 +70,28 @@ function Productos({ productos, setProductos }) {
       return;
     }
 
-    if (productoEditar) {
-      setProductos((actual) =>
-        actual.map((p) =>
-          p.codigo === productoEditar.codigo
-            ? { ...p, nombre, marca, estado: form.estado, precio }
-            : p
-        )
-      );
-    } else {
-      const siguienteNumero = productos.length + 1;
-      const nuevoCodigo = `P${String(siguienteNumero).padStart(3, '0')}`;
-      setProductos((actual) => [
-        ...actual,
-        {
-          codigo: nuevoCodigo,
-          nombre,
-          marca,
-          estado: form.estado,
-          precio,
-        },
-      ]);
-    }
+    const cuerpo = { nombre, marca, estado: form.estado, precio };
 
-    cerrarModal();
+    setGuardando(true);
+    try {
+      if (productoEditar) {
+        const actualizado = await peticion(`/productos/${productoEditar.id}`, {
+          metodo: 'PUT',
+          cuerpo,
+        });
+        setProductos((actual) =>
+          actual.map((p) => (p.id === productoEditar.id ? desdeApiProducto(actualizado) : p))
+        );
+      } else {
+        const creado = await peticion('/productos', { metodo: 'POST', cuerpo });
+        setProductos((actual) => [...actual, desdeApiProducto(creado)]);
+      }
+      cerrarModal();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
@@ -104,6 +104,15 @@ function Productos({ productos, setProductos }) {
           Nuevo Producto
         </button>
       </div>
+
+      {errorCarga && (
+        <div className="productos-banner-error" role="alert">
+          <span>{errorCarga}</span>
+          <button type="button" className="productos-reintentar" onClick={onReintentar}>
+            Reintentar
+          </button>
+        </div>
+      )}
 
       <div className="productos-buscador">
         <SearchIcon size={16} color="#777" />
@@ -129,7 +138,7 @@ function Productos({ productos, setProductos }) {
           </thead>
           <tbody>
             {productosFiltrados.map((p) => (
-              <tr key={p.codigo}>
+              <tr key={p.id}>
                 <td>{p.codigo}</td>
                 <td>{p.nombre}</td>
                 <td>{p.marca}</td>
@@ -151,7 +160,15 @@ function Productos({ productos, setProductos }) {
               </tr>
             ))}
 
-            {productosFiltrados.length === 0 && (
+            {cargando && (
+              <tr>
+                <td colSpan={6} className="productos-vacio">
+                  Cargando productos...
+                </td>
+              </tr>
+            )}
+
+            {!cargando && !errorCarga && productosFiltrados.length === 0 && (
               <tr>
                 <td colSpan={6} className="productos-vacio">
                   No se encontraron productos con ese código.
@@ -223,8 +240,8 @@ function Productos({ productos, setProductos }) {
               <button className="productos-btn-cancelar" type="button" onClick={cerrarModal}>
                 Cancelar
               </button>
-              <button className="productos-btn-guardar" type="submit">
-                Guardar producto
+              <button className="productos-btn-guardar" type="submit" disabled={guardando}>
+                {guardando ? 'Guardando...' : 'Guardar producto'}
               </button>
             </div>
           </form>

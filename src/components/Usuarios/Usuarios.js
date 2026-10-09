@@ -1,19 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Modal from '../Modales/Modales';
 import { SearchIcon, EyeIcon, EyeOffIcon } from '../Icons/icons';
 import { validarFormatoContrasena, LONGITUD_MAX_CONTRASENA } from '../../utils/contrasena';
-import {
-  soloNombre,
-  nombreUsuario,
-  sinEspacios,
-  soloEnteros,
-} from '../../utils/validaciones';
+import { soloNombre, nombreUsuario, sinEspacios, soloEnteros } from '../../utils/validaciones';
+import { peticion } from '../../services/api';
 import './Usuarios.css';
 
 const FORM_VACIO = { nombre: '', usuario: '', contrasena: '', rol: 'Cajero' };
 
-// El listado de usuarios vive en App para compartirlo con el Login.
-function Usuarios({ usuarios, setUsuarios }) {
+// El backend devuelve { idUsuario, nombre, username, rol } (nunca la contraseña).
+// Aquí se adapta a los nombres que ya usa este módulo.
+const desdeApi = (u) => ({ id: u.idUsuario, nombre: u.nombre, usuario: u.username, rol: u.rol });
+
+function Usuarios({ usuarioActual }) {
+  const [usuarios, setUsuarios] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [errorCarga, setErrorCarga] = useState('');
+  const [aviso, setAviso] = useState('');
+  const [guardando, setGuardando] = useState(false);
+
   const [menuAbierto, setMenuAbierto] = useState(null);
   const [busqueda, setBusqueda] = useState('');
 
@@ -24,6 +29,23 @@ function Usuarios({ usuarios, setUsuarios }) {
   const [form, setForm] = useState(FORM_VACIO);
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
   const [error, setError] = useState('');
+
+  const cargarUsuarios = useCallback(async () => {
+    setCargando(true);
+    setErrorCarga('');
+    try {
+      const datos = await peticion('/usuarios');
+      setUsuarios(datos.map(desdeApi));
+    } catch (err) {
+      setErrorCarga(err.message);
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    cargarUsuarios();
+  }, [cargarUsuarios]);
 
   const usuariosFiltrados = useMemo(() => {
     const texto = busqueda.trim();
@@ -40,21 +62,30 @@ function Usuarios({ usuarios, setUsuarios }) {
     setUsuarioEditar(null);
     setMostrarContrasena(false);
     setError('');
+    setAviso('');
     setModo('crear');
   };
 
   const abrirEditar = (u) => {
-    setForm({ nombre: u.nombre, usuario: u.usuario, contrasena: u.contrasena || '', rol: u.rol });
+    // La contraseña no se recibe del servidor: vacía = conservar la actual
+    setForm({ nombre: u.nombre, usuario: u.usuario, contrasena: '', rol: u.rol });
     setUsuarioEditar(u);
     setMostrarContrasena(false);
     setError('');
+    setAviso('');
     setModo('editar');
     setMenuAbierto(null);
   };
 
   const abrirEliminar = (u) => {
-    setUsuarioEliminar(u);
     setMenuAbierto(null);
+    setAviso('');
+    if (usuarioActual && u.id === usuarioActual.idUsuario) {
+      setAviso('No puedes eliminar tu propia cuenta mientras tienes la sesión iniciada.');
+      return;
+    }
+    setError('');
+    setUsuarioEliminar(u);
   };
 
   const cerrarFormulario = () => {
@@ -63,7 +94,12 @@ function Usuarios({ usuarios, setUsuarios }) {
     setError('');
   };
 
-  // Cerrar el menú con la tecla Escape
+  const cerrarEliminar = () => {
+    setUsuarioEliminar(null);
+    setError('');
+  };
+
+  // Cerrar el menú y los modales con la tecla Escape
   useEffect(() => {
     const alPresionarTecla = (e) => {
       if (e.key === 'Escape') {
@@ -82,8 +118,7 @@ function Usuarios({ usuarios, setUsuarios }) {
     setError('');
   };
 
-  // Por ahora solo visual (mock): guarda en el estado local, no hay backend todavía.
-  const guardarUsuario = (e) => {
+  const guardarUsuario = async (e) => {
     e.preventDefault();
 
     const nombre = form.nombre.trim();
@@ -104,34 +139,48 @@ function Usuarios({ usuarios, setUsuarios }) {
       return;
     }
 
-    const errorContrasena = validarFormatoContrasena(form.contrasena);
-    if (errorContrasena) {
-      setError(errorContrasena);
-      return;
+    // Al crear la contraseña es obligatoria; al editar solo se valida si se escribió una nueva
+    if (modo === 'crear' || form.contrasena) {
+      const errorContrasena = validarFormatoContrasena(form.contrasena);
+      if (errorContrasena) {
+        setError(errorContrasena);
+        return;
+      }
     }
 
-    if (modo === 'crear') {
-      const siguienteId = usuarios.reduce((max, u) => Math.max(max, u.id), 0) + 1;
-      setUsuarios((actual) => [
-        ...actual,
-        { id: siguienteId, nombre, usuario, contrasena: form.contrasena, rol: form.rol },
-      ]);
-    } else {
-      setUsuarios((actual) =>
-        actual.map((u) =>
-          u.id === usuarioEditar.id
-            ? { ...u, nombre, usuario, contrasena: form.contrasena, rol: form.rol }
-            : u
-        )
-      );
-    }
+    const cuerpo = { nombre, username: usuario, contrasena: form.contrasena, rol: form.rol };
 
-    cerrarFormulario();
+    setGuardando(true);
+    try {
+      if (modo === 'crear') {
+        const creado = await peticion('/usuarios', { metodo: 'POST', cuerpo });
+        setUsuarios((actual) => [...actual, desdeApi(creado)]);
+      } else {
+        const actualizado = await peticion(`/usuarios/${usuarioEditar.id}`, { metodo: 'PUT', cuerpo });
+        setUsuarios((actual) =>
+          actual.map((u) => (u.id === actualizado.idUsuario ? desdeApi(actualizado) : u))
+        );
+      }
+      cerrarFormulario();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setGuardando(false);
+    }
   };
 
-  // Solo visual (mock): no elimina realmente todavía
-  const confirmarEliminacion = () => {
-    setUsuarioEliminar(null);
+  const confirmarEliminacion = async () => {
+    setGuardando(true);
+    try {
+      await peticion(`/usuarios/${usuarioEliminar.id}`, { metodo: 'DELETE' });
+      setUsuarios((actual) => actual.filter((u) => u.id !== usuarioEliminar.id));
+      cerrarEliminar();
+    } catch (err) {
+      // Ej.: 409 si el usuario ya tiene ventas registradas
+      setError(err.message);
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
@@ -154,6 +203,21 @@ function Usuarios({ usuarios, setUsuarios }) {
           onClick={() => setMenuAbierto(null)}
           aria-hidden="true"
         />
+      )}
+
+      {errorCarga && (
+        <div className="users-banner-error" role="alert">
+          <span>{errorCarga}</span>
+          <button type="button" className="users-reintentar" onClick={cargarUsuarios}>
+            Reintentar
+          </button>
+        </div>
+      )}
+
+      {aviso && (
+        <div className="users-banner-error" role="alert">
+          <span>{aviso}</span>
+        </div>
       )}
 
       <div className="users-buscador">
@@ -187,7 +251,7 @@ function Usuarios({ usuarios, setUsuarios }) {
                   <td>{u.id}</td>
                   <td>{u.nombre}</td>
                   <td>{u.usuario}</td>
-                  <td aria-label="Contraseña oculta">{'*'.repeat(u.contrasena?.length || 8)}</td>
+                  <td aria-label="Contraseña oculta">{'********'}</td>
                   <td>
                     <span className={`users-role users-role-${u.rol.toLowerCase()}`}>
                       {u.rol}
@@ -234,7 +298,15 @@ function Usuarios({ usuarios, setUsuarios }) {
               );
             })}
 
-            {usuariosFiltrados.length === 0 && (
+            {cargando && (
+              <tr>
+                <td colSpan={6} className="users-vacio">
+                  Cargando usuarios...
+                </td>
+              </tr>
+            )}
+
+            {!cargando && usuariosFiltrados.length === 0 && !errorCarga && (
               <tr>
                 <td colSpan={6} className="users-vacio">
                   No se encontraron usuarios con ese ID.
@@ -278,7 +350,7 @@ function Usuarios({ usuarios, setUsuarios }) {
                   type={mostrarContrasena ? 'text' : 'password'}
                   value={form.contrasena}
                   onChange={(e) => actualizarCampo('contrasena', sinEspacios(e.target.value))}
-                  placeholder="Contraseña"
+                  placeholder={modo === 'editar' ? 'Nueva contraseña (opcional)' : 'Contraseña'}
                   maxLength={LONGITUD_MAX_CONTRASENA}
                   autoComplete="new-password"
                 />
@@ -293,6 +365,9 @@ function Usuarios({ usuarios, setUsuarios }) {
                 </button>
               </div>
               <small className="users-ayuda">
+                {modo === 'editar'
+                  ? 'Déjala vacía para conservar la contraseña actual. '
+                  : ''}
                 Entre 8 y 12 caracteres, con mayúscula, minúscula, número y símbolo especial.
               </small>
             </label>
@@ -314,8 +389,8 @@ function Usuarios({ usuarios, setUsuarios }) {
               <button className="users-btn-secundario" type="button" onClick={cerrarFormulario}>
                 Cancelar
               </button>
-              <button className="users-btn-primario" type="submit">
-                {modo === 'crear' ? 'Registrar usuario' : 'Guardar'}
+              <button className="users-btn-primario" type="submit" disabled={guardando}>
+                {guardando ? 'Guardando...' : modo === 'crear' ? 'Registrar usuario' : 'Guardar'}
               </button>
             </div>
           </form>
@@ -323,26 +398,27 @@ function Usuarios({ usuarios, setUsuarios }) {
       )}
 
       {usuarioEliminar && (
-        <Modal titulo="Eliminar usuario" onCerrar={() => setUsuarioEliminar(null)}>
+        <Modal titulo="Eliminar usuario" onCerrar={cerrarEliminar}>
           <p className="users-eliminar-texto">
             ¿Seguro que quieres eliminar a <strong>{usuarioEliminar.nombre}</strong>{' '}
             (@{usuarioEliminar.usuario})?
           </p>
-          <p className="users-form-aviso">Esta acción es solo visual por ahora (mock).</p>
+          {error && (
+            <p className="users-error" role="alert">
+              {error}
+            </p>
+          )}
           <div className="users-dialog-botones">
-            <button
-              className="users-btn-secundario"
-              type="button"
-              onClick={() => setUsuarioEliminar(null)}
-            >
+            <button className="users-btn-secundario" type="button" onClick={cerrarEliminar}>
               Cancelar
             </button>
             <button
               className="users-btn-peligro"
               type="button"
               onClick={confirmarEliminacion}
+              disabled={guardando}
             >
-              Eliminar
+              {guardando ? 'Eliminando...' : 'Eliminar'}
             </button>
           </div>
         </Modal>

@@ -364,3 +364,34 @@
   font-size: 0.85rem;
   font-weight: 600;
 }
+
+/* Avisos y errores de conexión */
+.users-banner-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: #fdecea;
+  border: 1px solid #f5c2bd;
+  color: #a93226;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.88rem;
+}
+
+.users-reintentar {
+  background: #fff;
+  border: 1px solid #a93226;
+  color: #a93226;
+  border-radius: 6px;
+  padding: 0.3rem 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.users-btn-primario:disabled,
+.users-btn-peligro:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { validarFormatoContrasena, LONGITUD_MAX_CONTRASENA } from '../../utils/contrasena';
 import { nombreUsuario, sinEspacios } from '../../utils/validaciones';
+import { peticion } from '../../services/api';
 import './Login.css';
 import logo from '../../Imagenes/logo.jpg';
 import { UserIconLogin, LockIcon, EyeIcon, EyeOffIcon } from '../../components/Icons/icons';
 
-function Login({ onLoginSuccess, usuarios }) {
+function Login({ onLoginSuccess }) {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
@@ -29,30 +30,15 @@ function Login({ onLoginSuccess, usuarios }) {
 
     setCargando(true);
     try {
-      // TODO: cuando tengas Spring Boot + MySQL, reemplaza el bloque mock de abajo por:
-      // const res = await fetch('http://localhost:8080/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ userName: usuario, contrasena }),
-      // });
-      // if (!res.ok) throw new Error('Credenciales inválidas');
-      // const data = await res.json();
+      // Backend: POST /api/usuarios/login -> { idUsuario, nombre, username, rol }
+      const data = await peticion('/usuarios/login', {
+        metodo: 'POST',
+        cuerpo: { username: usuario.trim(), contrasena },
+      });
 
-      await new Promise((resolve) => setTimeout(resolve, 400));
-
-      const encontrado = usuarios.find(
-        (u) => u.usuario.toLowerCase() === usuario.trim().toLowerCase() && u.contrasena === contrasena
-      );
-
-      if (!encontrado) {
-        setError('Usuario o contraseña incorrectos.');
-        return;
-      }
-
-      const data = { nombre: encontrado.nombre, rol: encontrado.rol };
       if (onLoginSuccess) onLoginSuccess(data);
     } catch (err) {
-      setError('Usuario o contraseña incorrectos.');
+      setError(err.status === 401 ? 'Usuario o contraseña incorrectos.' : err.message);
     } finally {
       setCargando(false);
     }

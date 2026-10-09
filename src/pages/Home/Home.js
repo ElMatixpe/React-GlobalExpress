@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Sidebar from '../../components/Layout/Sidebar';
 import Inicio from '../../components/Inicio/Inicio';
 import Usuarios from '../../components/Usuarios/Usuarios';
@@ -6,37 +6,54 @@ import Ventas from '../../components/Ventas/Ventas';
 import Reportes from '../../components/Reportes/Reportes';
 import Productos from '../../components/Productos/Productos';
 import Footer from '../../components/Footer/Footer';
-import ModuloPendiente from '../../components/ModuloPendiente/ModuloPendiente';
 import { UserPlusIcon, ChevronDownIcon } from '../../components/Icons/icons';
-import PRODUCTOS_MOCK from '../../data/productosMock';
+import { listarProductos } from '../../services/productosApi';
 import VENTAS_MOCK from '../../data/ventasMock';
 import './Home.css';
 
-const TITULOS = {
-  inicio: 'Inicio',
-  ventas: 'Ventas',
-  productos: 'Productos',
-  usuarios: 'Usuarios',
-  reportes: 'Reportes',
-};
-
-function Home({ usuario, onCerrarSesion, usuarios, setUsuarios }) {
+function Home({ usuario, onCerrarSesion }) {
   const [seccionActiva, setSeccionActiva] = useState('inicio');
-  // Estado compartido entre módulos (mock hasta conectar el backend)
-  const [productos, setProductos] = useState(PRODUCTOS_MOCK);
-  const [ventas, setVentas] = useState(VENTAS_MOCK);
+  // Estado compartido entre módulos
+  const [productos, setProductos] = useState([]); // viene del backend (MySQL)
+  const [cargandoProductos, setCargandoProductos] = useState(true);
+  const [errorProductos, setErrorProductos] = useState('');
+  const [ventas, setVentas] = useState(VENTAS_MOCK); // todavía mock
+
+  const cargarProductos = useCallback(async () => {
+    setCargandoProductos(true);
+    setErrorProductos('');
+    try {
+      setProductos(await listarProductos());
+    } catch (err) {
+      setErrorProductos(err.message);
+    } finally {
+      setCargandoProductos(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    cargarProductos();
+  }, [cargarProductos]);
 
   const renderContenido = () => {
     if (seccionActiva === 'inicio') return <Inicio usuario={usuario} />;
-    if (seccionActiva === 'usuarios') return <Usuarios usuarios={usuarios} setUsuarios={setUsuarios} />;
+    if (seccionActiva === 'usuarios') return <Usuarios usuarioActual={usuario} />;
     if (seccionActiva === 'productos')
-      return <Productos productos={productos} setProductos={setProductos} />;
+      return (
+        <Productos
+          productos={productos}
+          setProductos={setProductos}
+          cargando={cargandoProductos}
+          errorCarga={errorProductos}
+          onReintentar={cargarProductos}
+        />
+      );
     if (seccionActiva === 'ventas')
       return (
         <Ventas usuario={usuario} ventas={ventas} setVentas={setVentas} productos={productos} />
       );
     if (seccionActiva === 'reportes') return <Reportes usuario={usuario} />;
-    return <ModuloPendiente nombre={TITULOS[seccionActiva]} />;
+    return null;
   };
 
   return (
