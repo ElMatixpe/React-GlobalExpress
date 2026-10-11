@@ -17,6 +17,103 @@
   color: #666;
 }
 
+/* Control por fechas */
+.reportes-periodo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.6rem;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.reportes-periodo-campos { display: flex; flex-wrap: wrap; gap: 1rem; }
+
+.reportes-fecha {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.reportes-fecha input {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+.reportes-fecha input:focus { outline: none; border-color: #4c4fe0; }
+
+.reportes-atajos { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.reportes-atajo {
+  background: #ececf5;
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+}
+
+.reportes-atajo:hover { background: #dcdcf0; }
+
+.reportes-error {
+  flex-basis: 100%;
+  margin: 0;
+  color: #c0392b;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Tarjetas de resumen (ingresos, máximo, mínimo, promedio, canceladas) */
+.reportes-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.8rem;
+}
+
+.reportes-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-left: 5px solid #ccc;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.reportes-kpi-verde { border-left-color: #3fae5c; }
+.reportes-kpi-azul { border-left-color: #4c4fe0; }
+.reportes-kpi-naranja { border-left-color: #f26522; }
+.reportes-kpi-morado { border-left-color: #9333ea; }
+.reportes-kpi-rojo { border-left-color: #e02020; }
+.reportes-kpi-amarillo { border-left-color: #ca8a04; }
+
+.reportes-kpi-etiqueta { font-size: 0.75rem; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.02em; }
+.reportes-kpi-valor { font-size: 1.4rem; color: #1a1a1a; }
+.reportes-kpi-detalle { font-size: 0.75rem; color: #888; }
+
+.reportes-seccion {
+  margin: 0 0 0.9rem;
+  font-size: 1rem;
+  color: #1a1a1a;
+}
+
 /* Tarjetas de indicadores */
 .reportes-grid {
   display: grid;
@@ -190,3 +287,60 @@
     print-color-adjust: exact;
   }
 }
+
+.reportes-vacio {
+  text-align: center !important;
+  color: #888 !important;
+  padding: 1.4rem !important;
+}
+
+.reportes-nota {
+  margin: 0.8rem 0 0;
+  font-size: 0.72rem;
+  color: #777;
+}
+
+.reportes-kpi-valor { overflow-wrap: anywhere; }
+
+.reportes-cargando {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.reportes-banner-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: #fdecea;
+  border: 1px solid #f5c2bd;
+  color: #a93226;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.88rem;
+}
+
+.reportes-reintentar {
+  background: #fff;
+  border: 1px solid #a93226;
+  color: #a93226;
+  border-radius: 6px;
+  padding: 0.3rem 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reportes-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.reportes-aviso {
+  margin: 0 0 1rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.reportes-aviso-ok { background: #e8f5ec; color: #1e7a3a; }
+.reportes-aviso-error { background: #fdecea; color: #a93226; }

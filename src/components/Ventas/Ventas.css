@@ -402,3 +402,33 @@
 
 .ventas-btn-peligro:hover { background-color: #c01818; }
 
+/* Errores de conexión y botones en espera */
+.ventas-banner-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: #fdecea;
+  border: 1px solid #f5c2bd;
+  color: #a93226;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.88rem;
+}
+
+.ventas-reintentar {
+  background: #fff;
+  border: 1px solid #a93226;
+  color: #a93226;
+  border-radius: 6px;
+  padding: 0.3rem 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ventas-btn-confirmar:disabled,
+.ventas-btn-peligro:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

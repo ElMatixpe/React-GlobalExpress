@@ -8,7 +8,7 @@ import Productos from '../../components/Productos/Productos';
 import Footer from '../../components/Footer/Footer';
 import { UserPlusIcon, ChevronDownIcon } from '../../components/Icons/icons';
 import { listarProductos } from '../../services/productosApi';
-import VENTAS_MOCK from '../../data/ventasMock';
+import { listarVentas } from '../../services/ventasApi';
 import './Home.css';
 
 function Home({ usuario, onCerrarSesion }) {
@@ -17,7 +17,9 @@ function Home({ usuario, onCerrarSesion }) {
   const [productos, setProductos] = useState([]); // viene del backend (MySQL)
   const [cargandoProductos, setCargandoProductos] = useState(true);
   const [errorProductos, setErrorProductos] = useState('');
-  const [ventas, setVentas] = useState(VENTAS_MOCK); // todavía mock
+  const [ventas, setVentas] = useState([]); // viene del backend (MySQL)
+  const [cargandoVentas, setCargandoVentas] = useState(true);
+  const [errorVentas, setErrorVentas] = useState('');
 
   const cargarProductos = useCallback(async () => {
     setCargandoProductos(true);
@@ -35,6 +37,22 @@ function Home({ usuario, onCerrarSesion }) {
     cargarProductos();
   }, [cargarProductos]);
 
+  const cargarVentas = useCallback(async () => {
+    setCargandoVentas(true);
+    setErrorVentas('');
+    try {
+      setVentas(await listarVentas());
+    } catch (err) {
+      setErrorVentas(err.message);
+    } finally {
+      setCargandoVentas(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    cargarVentas();
+  }, [cargarVentas]);
+
   const renderContenido = () => {
     if (seccionActiva === 'inicio') return <Inicio usuario={usuario} />;
     if (seccionActiva === 'usuarios') return <Usuarios usuarioActual={usuario} />;
@@ -50,7 +68,15 @@ function Home({ usuario, onCerrarSesion }) {
       );
     if (seccionActiva === 'ventas')
       return (
-        <Ventas usuario={usuario} ventas={ventas} setVentas={setVentas} productos={productos} />
+        <Ventas
+          usuario={usuario}
+          ventas={ventas}
+          setVentas={setVentas}
+          productos={productos}
+          cargando={cargandoVentas}
+          errorCarga={errorVentas}
+          onReintentar={cargarVentas}
+        />
       );
     if (seccionActiva === 'reportes') return <Reportes usuario={usuario} />;
     return null;

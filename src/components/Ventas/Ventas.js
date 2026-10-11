@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import Modal from '../Modales/Modales';
 import { SearchIcon } from '../Icons/icons';
 import { soloNombre, soloEnteros, codigoProducto } from '../../utils/validaciones';
+import { peticion } from '../../services/api';
+import { desdeApiVenta } from '../../services/ventasApi';
 import './Ventas.css';
 
 const METODOS_PAGO = ['Efectivo', 'Tarjeta', 'Yape', 'Plin'];
@@ -14,18 +16,7 @@ const FILTROS = [
 
 const moneda = (n) => `S/ ${Number(n).toFixed(2)}`;
 
-// Los códigos son "V" + 4 dígitos (V0000, V0001...). Devuelve el número que sigue.
-const siguienteNumero = (ventas) =>
-  ventas.reduce((max, v) => Math.max(max, parseInt(v.codigo.replace(/\D/g, ''), 10) || 0), -1) + 1;
-
-const fechaHoy = () => {
-  const d = new Date();
-  const dd = String(d.getDate()).padStart(2, '0');
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  return `${dd}/${mm}/${d.getFullYear()}`;
-};
-
-function Ventas({ usuario, ventas, setVentas, productos }) {
+function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, onReintentar }) {
   const [vista, setVista] = useState('historial'); // 'historial' | 'nueva'
 
   // ---- Historial ----
@@ -51,6 +42,7 @@ function Ventas({ usuario, ventas, setVentas, productos }) {
   const [error, setError] = useState('');
   const [ventaExitosa, setVentaExitosa] = useState(null);
   const [modalCancelar, setModalCancelar] = useState(false);
+  const [guardando, setGuardando] = useState(false);
 
   // ---- Modal agregar producto ----
   const [modalProductos, setModalProductos] = useState(false);
@@ -88,31 +80,44 @@ function Ventas({ usuario, ventas, setVentas, productos }) {
       setVista('historial');
       return;
     }
+    setError('');
     setModalCancelar(true);
   };
 
   const seguirConVenta = () => setModalCancelar(false);
 
-  // Por ahora solo visual (mock): registra la venta como Cancelado en el estado local.
-  const confirmarCancelacion = () => {
-    const siguiente = siguienteNumero(ventas);
-    setVentas((actual) => [
-      ...actual,
-      {
-        codigo: `V${String(siguiente).padStart(4, '0')}`,
-        fecha: fechaHoy(),
-        cliente: cliente.trim() || 'Cliente general',
-        vendedor: usuario?.nombre || 'Vendedor',
+  // Envía la venta al backend (POST /api/ventas). El servidor toma los precios de la
+  // base de datos, calcula el total y guarda la venta con su detalle.
+  const enviarVenta = async (estado) => {
+    const creada = await peticion('/ventas', {
+      metodo: 'POST',
+      cuerpo: {
+        idUsuario: usuario?.idUsuario,
+        cliente: cliente.trim(),
         metodoPago,
-        total,
-        estado: 'Cancelado',
+        estado,
+        detalles: carrito.map((i) => ({ idProducto: i.id, cantidad: i.cantidad })),
       },
-    ]);
-    setModalCancelar(false);
-    limpiarNuevaVenta();
-    setBusqueda('');
-    setFiltro('cancelado');
-    setVista('historial');
+    });
+    const venta = desdeApiVenta(creada);
+    setVentas((actual) => [...actual, venta]);
+    return venta;
+  };
+
+  const confirmarCancelacion = async () => {
+    setGuardando(true);
+    try {
+      await enviarVenta('Cancelado');
+      setModalCancelar(false);
+      limpiarNuevaVenta();
+      setBusqueda('');
+      setFiltro('cancelado');
+      setVista('historial');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setGuardando(false);
+    }
   };
 
   const abrirModalProductos = () => {
@@ -136,7 +141,13 @@ function Ventas({ usuario, ventas, setVentas, productos }) {
       }
       return [
         ...actual,
-        { codigo: producto.codigo, nombre: producto.nombre, precio: Number(producto.precio), cantidad },
+        {
+          id: producto.id,
+          codigo: producto.codigo,
+          nombre: producto.nombre,
+          precio: Number(producto.precio),
+          cantidad,
+        },
       ];
     });
     setCantidades((actual) => ({ ...actual, [producto.codigo]: 1 }));
@@ -160,8 +171,7 @@ function Ventas({ usuario, ventas, setVentas, productos }) {
     );
   };
 
-  // Por ahora solo visual (mock): guarda en el estado local, no hay backend todavía.
-  const confirmarVenta = () => {
+  const confirmarVenta = async () => {
     if (carrito.length === 0) {
       setError('Agrega al menos un producto al carrito para confirmar la venta.');
       return;
@@ -172,19 +182,15 @@ function Ventas({ usuario, ventas, setVentas, productos }) {
       return;
     }
 
-    const siguiente = siguienteNumero(ventas);
-    const nuevaVenta = {
-      codigo: `V${String(siguiente).padStart(4, '0')}`,
-      fecha: fechaHoy(),
-      cliente: cliente.trim() || 'Cliente general',
-      vendedor: usuario?.nombre || 'Vendedor',
-      metodoPago,
-      total,
-      estado: 'Pagado',
-    };
-
-    setVentas((actual) => [...actual, nuevaVenta]);
-    setVentaExitosa(nuevaVenta);
+    setGuardando(true);
+    try {
+      const venta = await enviarVenta('Pagado');
+      setVentaExitosa(venta);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setGuardando(false);
+    }
   };
 
   const cerrarExito = () => {
@@ -244,6 +250,15 @@ function Ventas({ usuario, ventas, setVentas, productos }) {
             </div>
           </div>
 
+          {errorCarga && (
+            <div className="ventas-banner-error" role="alert">
+              <span>{errorCarga}</span>
+              <button type="button" className="ventas-reintentar" onClick={onReintentar}>
+                Reintentar
+              </button>
+            </div>
+          )}
+
           <div className="ventas-table-container">
             <table className="ventas-table">
               <thead>
@@ -278,7 +293,15 @@ function Ventas({ usuario, ventas, setVentas, productos }) {
                   </tr>
                 ))}
 
-                {ventasFiltradas.length === 0 && (
+                {cargando && (
+                  <tr>
+                    <td colSpan={7} className="ventas-vacio">
+                      Cargando ventas...
+                    </td>
+                  </tr>
+                )}
+
+                {!cargando && !errorCarga && ventasFiltradas.length === 0 && (
                   <tr>
                     <td colSpan={7} className="ventas-vacio">
                       No se encontraron ventas con esos criterios.
@@ -404,8 +427,10 @@ function Ventas({ usuario, ventas, setVentas, productos }) {
             <button className="ventas-btn-cancelar" type="button" onClick={cancelarVenta}>
               Cancelar
             </button>
-            <button className="ventas-btn-confirmar" type="button" onClick={confirmarVenta}>
-              Confirmar Venta
+            <button className="ventas-btn-confirmar" type="button" onClick={confirmarVenta}
+              disabled={guardando}
+            >
+              {guardando ? 'Registrando...' : 'Confirmar Venta'}
             </button>
           </div>
         </div>
@@ -484,12 +509,19 @@ function Ventas({ usuario, ventas, setVentas, productos }) {
             ¿Estás seguro de que deseas cancelar esta venta? Se registrará en el historial como{' '}
             <strong>Cancelado</strong>.
           </p>
+          {error && (
+            <p className="ventas-error" role="alert">
+              {error}
+            </p>
+          )}
           <div className="ventas-botones-finales">
             <button className="ventas-btn-cancelar" type="button" onClick={seguirConVenta}>
               Seguir con la venta
             </button>
-            <button className="ventas-btn-peligro" type="button" onClick={confirmarCancelacion}>
-              Sí, cancelar venta
+            <button className="ventas-btn-peligro" type="button" onClick={confirmarCancelacion}
+              disabled={guardando}
+            >
+              {guardando ? 'Registrando...' : 'Sí, cancelar venta'}
             </button>
           </div>
         </Modal>
@@ -520,3 +552,4 @@ function Ventas({ usuario, ventas, setVentas, productos }) {
 }
 
 export default Ventas;
+
