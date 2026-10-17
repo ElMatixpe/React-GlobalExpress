@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import Modal from '../Modales/Modales';
+import Voucher from './Voucher';
 import { SearchIcon } from '../Icons/icons';
 import { soloNombre, soloEnteros, codigoProducto } from '../../utils/validaciones';
 import { peticion } from '../../services/api';
@@ -17,9 +18,9 @@ const FILTROS = [
 const moneda = (n) => `S/ ${Number(n).toFixed(2)}`;
 
 function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, onReintentar }) {
-  const [vista, setVista] = useState('historial'); // 'historial' | 'nueva'
+  const [vista, setVista] = useState('historial'); 
 
-  // ---- Historial ----
+  //Historial 
   const [busqueda, setBusqueda] = useState('');
   const [filtro, setFiltro] = useState('exito');
 
@@ -34,7 +35,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
       });
   }, [ventas, busqueda, filtro]);
 
-  // ---- Nueva venta ----
+  // Nueva venta
   const [cliente, setCliente] = useState('');
   const [metodoPago, setMetodoPago] = useState('Tarjeta');
   const [carrito, setCarrito] = useState([]);
@@ -43,8 +44,9 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
   const [ventaExitosa, setVentaExitosa] = useState(null);
   const [modalCancelar, setModalCancelar] = useState(false);
   const [guardando, setGuardando] = useState(false);
+  const [voucherVenta, setVoucherVenta] = useState(null); // venta cuyo voucher se está viendo
 
-  // ---- Modal agregar producto ----
+  //Modal agregar producto 
   const [modalProductos, setModalProductos] = useState(false);
   const [busquedaProd, setBusquedaProd] = useState('');
   const [cantidades, setCantidades] = useState({}); // { P001: 2 }
@@ -270,6 +272,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                   <th>Metodo de Pago</th>
                   <th>Total</th>
                   <th>Estado</th>
+                  <th>Voucher</th>
                 </tr>
               </thead>
               <tbody>
@@ -290,12 +293,21 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                         {v.estado}
                       </span>
                     </td>
+                    <td>
+                      <button
+                        type="button"
+                        className="ventas-btn-voucher"
+                        onClick={() => setVoucherVenta(v)}
+                      >
+                        Ver voucher
+                      </button>
+                    </td>
                   </tr>
                 ))}
 
                 {cargando && (
                   <tr>
-                    <td colSpan={7} className="ventas-vacio">
+                    <td colSpan={8} className="ventas-vacio">
                       Cargando ventas...
                     </td>
                   </tr>
@@ -303,7 +315,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
 
                 {!cargando && !errorCarga && ventasFiltradas.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="ventas-vacio">
+                    <td colSpan={8} className="ventas-vacio">
                       No se encontraron ventas con esos criterios.
                     </td>
                   </tr>
@@ -438,15 +450,30 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
 
       {modalProductos && (
         <Modal titulo="Agregar producto" onCerrar={cerrarModalProductos} ancho={640}>
-          <div className="ventas-buscador ventas-buscador-modal">
-            <SearchIcon size={16} color="#777" />
-            <input
-              type="text"
-              placeholder="Búsqueda por Id de Producto"
-              value={busquedaProd}
-              onChange={(e) => setBusquedaProd(codigoProducto(e.target.value))}
-              autoFocus
-            />
+          <div className="ventas-modal-busqueda">
+            <div className="ventas-buscador ventas-buscador-modal">
+              <SearchIcon size={16} color="#777" />
+              <input
+                type="text"
+                placeholder="Buscar por Id de producto (ej. P001)"
+                value={busquedaProd}
+                onChange={(e) => setBusquedaProd(codigoProducto(e.target.value))}
+                autoFocus
+              />
+              {busquedaProd && (
+                <button
+                  type="button"
+                  className="ventas-buscador-limpiar"
+                  onClick={() => setBusquedaProd('')}
+                  aria-label="Limpiar búsqueda"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            <span className="ventas-modal-contador">
+              {productosModal.length} {productosModal.length === 1 ? 'producto' : 'productos'}
+            </span>
           </div>
 
           <div className="ventas-modal-lista">
@@ -541,15 +568,25 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
               Método de pago: {ventaExitosa.metodoPago} · Total:{' '}
               <strong>{moneda(ventaExitosa.total)}</strong>
             </p>
-            <button className="ventas-btn-confirmar" type="button" onClick={cerrarExito}>
-              Aceptar
-            </button>
+            <div className="ventas-exito-botones">
+              <button
+                className="ventas-btn-cancelar"
+                type="button"
+                onClick={() => setVoucherVenta(ventaExitosa)}
+              >
+                Generar voucher PDF
+              </button>
+              <button className="ventas-btn-confirmar" type="button" onClick={cerrarExito}>
+                Aceptar
+              </button>
+            </div>
           </div>
         </Modal>
       )}
+
+      {voucherVenta && <Voucher venta={voucherVenta} onCerrar={() => setVoucherVenta(null)} />}
     </div>
   );
 }
 
 export default Ventas;
-

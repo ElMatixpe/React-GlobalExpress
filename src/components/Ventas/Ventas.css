@@ -23,10 +23,21 @@
   cursor: pointer;
 }
 
-.ventas-btn-historial { background-color: #4c4fe0; }
-.ventas-btn-historial:hover { background-color: #3f42c7; }
-.ventas-btn-nueva { background-color: #3fae5c; }
-.ventas-btn-nueva:hover { background-color: #359a4f; }
+.ventas-btn-historial {
+  background-color: #4c4fe0;
+}
+
+.ventas-btn-historial:hover {
+  background-color: #3f42c7;
+}
+
+.ventas-btn-nueva {
+  background-color: #3fae5c;
+}
+
+.ventas-btn-nueva:hover {
+  background-color: #359a4f;
+}
 
 .ventas-btn-activo {
   box-shadow: 0 0 0 3px rgba(238, 223, 58, 0.7);
@@ -51,6 +62,7 @@
   padding: 0.65rem 1rem;
   width: 100%;
   max-width: 420px;
+  box-sizing: border-box;
 }
 
 .ventas-buscador input {
@@ -62,11 +74,49 @@
   color: #333;
 }
 
-.ventas-buscador input::placeholder { color: #8a8a9a; }
+.ventas-buscador input::placeholder {
+  color: #8a8a9a;
+}
+
+.ventas-buscador input:focus {
+  outline: none;
+}
+
+.ventas-buscador:focus-within {
+  background-color: #e4e4f3;
+  box-shadow: 0 0 0 2px rgba(76, 79, 224, 0.35);
+}
 
 .ventas-buscador-modal {
   max-width: none;
+  margin: 0;
+}
+
+.ventas-modal-busqueda {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
   margin-bottom: 1rem;
+}
+
+.ventas-modal-contador {
+  align-self: flex-end;
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.ventas-buscador-limpiar {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: #777;
+  cursor: pointer;
+  padding: 0 0.2rem;
+}
+
+.ventas-buscador-limpiar:hover {
+  color: #1a1a1a;
 }
 
 .ventas-filtros {
@@ -96,11 +146,26 @@
   opacity: 0.75;
 }
 
-.ventas-pill:hover { opacity: 1; }
-.ventas-pill-activa { opacity: 1; border-color: #1a1a1a; }
-.ventas-pill-exito { background-color: #3fae5c; }
-.ventas-pill-todos { background-color: #4c4fe0; }
-.ventas-pill-cancelado { background-color: #e02020; }
+.ventas-pill:hover {
+  opacity: 1;
+}
+
+.ventas-pill-activa {
+  opacity: 1;
+  border-color: #1a1a1a;
+}
+
+.ventas-pill-exito {
+  background-color: #3fae5c;
+}
+
+.ventas-pill-todos {
+  background-color: #4c4fe0;
+}
+
+.ventas-pill-cancelado {
+  background-color: #e02020;
+}
 
 /* Tabla historial */
 .ventas-table-container {
@@ -117,7 +182,9 @@
   font-size: 0.9rem;
 }
 
-.ventas-table thead { background-color: #eedf3a; }
+.ventas-table thead {
+  background-color: #eedf3a;
+}
 
 .ventas-table th,
 .ventas-table td {
@@ -131,11 +198,22 @@
   color: #1a1a1a;
 }
 
-.ventas-table tbody tr + tr { border-top: 1px solid #eee; }
-.ventas-table tbody tr + tr td { border-top: 1px solid #eee; }
+.ventas-table tbody tr+tr {
+  border-top: 1px solid #eee;
+}
 
-.ventas-estado-pagado { color: #1a1a1a; }
-.ventas-estado-cancelado { color: #c0392b; font-weight: 600; }
+.ventas-table tbody tr+tr td {
+  border-top: 1px solid #eee;
+}
+
+.ventas-estado-pagado {
+  color: #1a1a1a;
+}
+
+.ventas-estado-cancelado {
+  color: #c0392b;
+  font-weight: 600;
+}
 
 .ventas-vacio {
   text-align: center;
@@ -166,7 +244,9 @@
   color: #1a1a1a;
 }
 
-.ventas-campo span { font-weight: 700; }
+.ventas-campo span {
+  font-weight: 700;
+}
 
 .ventas-campo input,
 .ventas-campo select {
@@ -198,7 +278,9 @@
   font-size: 0.85rem;
 }
 
-.ventas-carrito thead { background-color: #eedf3a; }
+.ventas-carrito thead {
+  background-color: #eedf3a;
+}
 
 .ventas-carrito th,
 .ventas-carrito td {
@@ -206,9 +288,13 @@
   padding: 0.55rem 0.8rem;
 }
 
-.ventas-carrito tbody tr + tr td { border-top: 1px solid #eee; }
+.ventas-carrito tbody tr+tr td {
+  border-top: 1px solid #eee;
+}
 
-.ventas-col-quitar { width: 90px; }
+.ventas-col-quitar {
+  width: 90px;
+}
 
 .ventas-btn-quitar {
   background: #fff;
@@ -221,7 +307,10 @@
   cursor: pointer;
 }
 
-.ventas-btn-quitar:hover { background-color: #e02020; color: #fff; }
+.ventas-btn-quitar:hover {
+  background-color: #e02020;
+  color: #fff;
+}
 
 .ventas-input-cantidad {
   width: 64px;
@@ -233,7 +322,10 @@
   font-family: inherit;
 }
 
-.ventas-input-cantidad:focus { outline: none; border-color: #4c4fe0; }
+.ventas-input-cantidad:focus {
+  outline: none;
+  border-color: #4c4fe0;
+}
 
 .ventas-acciones-fila {
   display: flex;
@@ -244,7 +336,11 @@
   margin-bottom: 1rem;
 }
 
-.ventas-acciones-izq { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.ventas-acciones-izq {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
 
 .ventas-btn-agregar,
 .ventas-btn-editar {
@@ -257,10 +353,21 @@
   cursor: pointer;
 }
 
-.ventas-btn-agregar { background-color: #3fae5c; }
-.ventas-btn-agregar:hover { background-color: #359a4f; }
-.ventas-btn-editar { background-color: #3aa8b8; }
-.ventas-btn-editar:hover { background-color: #2f8d9b; }
+.ventas-btn-agregar {
+  background-color: #3fae5c;
+}
+
+.ventas-btn-agregar:hover {
+  background-color: #359a4f;
+}
+
+.ventas-btn-editar {
+  background-color: #3aa8b8;
+}
+
+.ventas-btn-editar:hover {
+  background-color: #2f8d9b;
+}
 
 .ventas-btn-agregar:disabled,
 .ventas-btn-editar:disabled {
@@ -276,7 +383,9 @@
   font-weight: 700;
 }
 
-.ventas-total strong { font-size: 1.5rem; }
+.ventas-total strong {
+  font-size: 1.5rem;
+}
 
 .ventas-error {
   margin: 0 0 1rem;
@@ -306,7 +415,9 @@
   color: #333;
 }
 
-.ventas-btn-cancelar:hover { background-color: #f2f2f2; }
+.ventas-btn-cancelar:hover {
+  background-color: #f2f2f2;
+}
 
 .ventas-btn-confirmar {
   background-color: #3fae5c;
@@ -314,7 +425,9 @@
   color: #fff;
 }
 
-.ventas-btn-confirmar:hover { background-color: #359a4f; }
+.ventas-btn-confirmar:hover {
+  background-color: #359a4f;
+}
 
 /* Modal agregar producto */
 .ventas-modal-lista {
@@ -333,8 +446,13 @@
   padding: 0.7rem 0.9rem;
 }
 
-.ventas-modal-item + .ventas-modal-item { border-top: 1px solid #eee; }
-.ventas-modal-item-off { opacity: 0.55; }
+.ventas-modal-item+.ventas-modal-item {
+  border-top: 1px solid #eee;
+}
+
+.ventas-modal-item-off {
+  opacity: 0.55;
+}
 
 .ventas-modal-info {
   flex: 1;
@@ -344,13 +462,35 @@
   min-width: 0;
 }
 
-.ventas-modal-codigo { font-size: 0.75rem; font-weight: 700; color: #4c4fe0; }
-.ventas-modal-nombre { font-weight: 600; color: #1a1a1a; }
-.ventas-modal-detalle { font-size: 0.8rem; color: #777; }
-.ventas-modal-detalle em { font-style: normal; color: #c0392b; }
-.ventas-modal-detalle em.ventas-modal-encarrito { color: #3fae5c; font-weight: 600; }
+.ventas-modal-codigo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4c4fe0;
+}
 
-.ventas-btn-agregar-chico { padding: 0.45rem 0.9rem; }
+.ventas-modal-nombre {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.ventas-modal-detalle {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.ventas-modal-detalle em {
+  font-style: normal;
+  color: #c0392b;
+}
+
+.ventas-modal-detalle em.ventas-modal-encarrito {
+  color: #3fae5c;
+  font-weight: 600;
+}
+
+.ventas-btn-agregar-chico {
+  padding: 0.45rem 0.9rem;
+}
 
 .ventas-modal-pie {
   display: flex;
@@ -367,8 +507,15 @@
   gap: 0.4rem;
 }
 
-.ventas-exito h3 { margin: 0.4rem 0 0; font-size: 1.15rem; color: #1a1a1a; }
-.ventas-exito p { margin: 0 0 1rem; }
+.ventas-exito h3 {
+  margin: 0.4rem 0 0;
+  font-size: 1.15rem;
+  color: #1a1a1a;
+}
+
+.ventas-exito p {
+  margin: 0 0 1rem;
+}
 
 .ventas-exito-icono {
   width: 58px;
@@ -382,12 +529,19 @@
 }
 
 @media (max-width: 600px) {
-  .ventas-toolbar { flex-wrap: wrap; }
-  .ventas-form-fila { grid-template-columns: 1fr; }
+  .ventas-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .ventas-form-fila {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Confirmación de cancelación */
-.ventas-cancelar-texto { margin: 0 0 1.2rem; }
+.ventas-cancelar-texto {
+  margin: 0 0 1.2rem;
+}
 
 .ventas-btn-peligro {
   background-color: #e02020;
@@ -400,7 +554,9 @@
   cursor: pointer;
 }
 
-.ventas-btn-peligro:hover { background-color: #c01818; }
+.ventas-btn-peligro:hover {
+  background-color: #c01818;
+}
 
 /* Errores de conexión y botones en espera */
 .ventas-banner-error {
@@ -431,4 +587,27 @@
 .ventas-btn-peligro:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Voucher */
+.ventas-btn-voucher {
+  background: #4c4fe0;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ventas-btn-voucher:hover {
+  background: #3f42c7;
+}
+
+.ventas-exito-botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
 }

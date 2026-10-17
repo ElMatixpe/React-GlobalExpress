@@ -1,4 +1,5 @@
 import { HomeIcon, TagIcon, BoxIcon, UsersIcon, ReportIcon, LogoutIcon } from '../Icons/icons';
+import { puedeVerSeccion } from '../../utils/permisos';
 import './Sidebar.css';
 import logo from '../../Imagenes/logo.jpg';
 
@@ -10,7 +11,9 @@ const MENU_ITEMS = [
   { key: 'reportes', label: 'Reportes', icon: ReportIcon },
 ];
 
-function Sidebar({ activo, onSeleccionar, onCerrarSesion }) {
+function Sidebar({ activo, rol, onSeleccionar, onCerrarSesion }) {
+  const itemsVisibles = MENU_ITEMS.filter((item) => puedeVerSeccion(rol, item.key));
+
   return (
     <aside className="sidebar">
       <div>
@@ -25,7 +28,7 @@ function Sidebar({ activo, onSeleccionar, onCerrarSesion }) {
         </div>
 
         <nav className="sidebar-menu">
-          {MENU_ITEMS.map(({ key, label, icon: Icon }) => (
+          {itemsVisibles.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
               className={`sidebar-item ${activo === key ? 'sidebar-item-activo' : ''}`}

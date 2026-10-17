@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { validarFormatoContrasena, LONGITUD_MAX_CONTRASENA } from '../../utils/contrasena';
 import { nombreUsuario, sinEspacios } from '../../utils/validaciones';
-import { peticion } from '../../services/api';
+import { peticion, guardarToken } from '../../services/api';
 import './Login.css';
 import logo from '../../Imagenes/logo.jpg';
 import { UserIconLogin, LockIcon, EyeIcon, EyeOffIcon } from '../../components/Icons/icons';
@@ -30,13 +30,14 @@ function Login({ onLoginSuccess }) {
 
     setCargando(true);
     try {
-      // Backend: POST /api/usuarios/login -> { idUsuario, nombre, username, rol }
+      // Backend: POST /api/usuarios/login -> { token, usuario: { idUsuario, nombre, username, rol } }
       const data = await peticion('/usuarios/login', {
         metodo: 'POST',
         cuerpo: { username: usuario.trim(), contrasena },
       });
 
-      if (onLoginSuccess) onLoginSuccess(data);
+      guardarToken(data.token);
+      if (onLoginSuccess) onLoginSuccess(data.usuario);
     } catch (err) {
       setError(err.status === 401 ? 'Usuario o contraseña incorrectos.' : err.message);
     } finally {
@@ -116,3 +117,4 @@ function Login({ onLoginSuccess }) {
 }
 
 export default Login;
+

@@ -7,13 +7,13 @@ import Reportes from '../../components/Reportes/Reportes';
 import Productos from '../../components/Productos/Productos';
 import Footer from '../../components/Footer/Footer';
 import { UserPlusIcon, ChevronDownIcon } from '../../components/Icons/icons';
+import { puedeVerSeccion, puedeGestionarProductos } from '../../utils/permisos';
 import { listarProductos } from '../../services/productosApi';
 import { listarVentas } from '../../services/ventasApi';
 import './Home.css';
 
 function Home({ usuario, onCerrarSesion }) {
   const [seccionActiva, setSeccionActiva] = useState('inicio');
-  // Estado compartido entre módulos
   const [productos, setProductos] = useState([]); // viene del backend (MySQL)
   const [cargandoProductos, setCargandoProductos] = useState(true);
   const [errorProductos, setErrorProductos] = useState('');
@@ -54,6 +54,14 @@ function Home({ usuario, onCerrarSesion }) {
   }, [cargarVentas]);
 
   const renderContenido = () => {
+    if (!puedeVerSeccion(usuario?.rol, seccionActiva)) {
+      return (
+        <div className="home-restringido">
+          <h2>Acceso restringido</h2>
+          <p>Tu rol ({usuario?.rol}) no tiene permiso para ver esta sección.</p>
+        </div>
+      );
+    }
     if (seccionActiva === 'inicio') return <Inicio usuario={usuario} />;
     if (seccionActiva === 'usuarios') return <Usuarios usuarioActual={usuario} />;
     if (seccionActiva === 'productos')
@@ -64,6 +72,7 @@ function Home({ usuario, onCerrarSesion }) {
           cargando={cargandoProductos}
           errorCarga={errorProductos}
           onReintentar={cargarProductos}
+          puedeGestionar={puedeGestionarProductos(usuario?.rol)}
         />
       );
     if (seccionActiva === 'ventas')
@@ -86,6 +95,7 @@ function Home({ usuario, onCerrarSesion }) {
     <div className="home-layout">
       <Sidebar
         activo={seccionActiva}
+        rol={usuario?.rol}
         onSeleccionar={setSeccionActiva}
         onCerrarSesion={onCerrarSesion}
       />

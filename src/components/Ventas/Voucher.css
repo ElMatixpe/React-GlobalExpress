@@ -1,0 +1,139 @@
+/* ---------- Documento (vista previa e impresión) ---------- */
+.voucher-doc {
+  background: #fff;
+  color: #1a1a1a;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 0.85rem;
+  padding: 1.4rem 1.6rem;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+.voucher-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 2px solid #1a1a1a;
+}
+
+.voucher-empresa { display: flex; align-items: center; gap: 0.8rem; }
+.voucher-logo { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; }
+.voucher-empresa-nombre { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.02em; }
+.voucher-empresa-sub { font-size: 0.8rem; color: #555; }
+.voucher-empresa-contacto { font-size: 0.7rem; color: #777; margin-top: 0.15rem; }
+
+.voucher-numero { text-align: right; }
+.voucher-titulo { font-size: 0.8rem; font-weight: 700; color: #555; }
+.voucher-codigo { font-size: 1.4rem; font-weight: 800; margin-top: 0.15rem; }
+
+.voucher-cancelada {
+  margin: 0.9rem 0 0;
+  padding: 0.4rem;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #c0392b;
+  border: 2px solid #c0392b;
+  border-radius: 6px;
+}
+
+.voucher-datos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 1.5rem;
+  margin: 1rem 0;
+}
+
+.voucher-datos span { font-weight: 700; color: #555; }
+
+.voucher-tabla { width: 100%; border-collapse: collapse; }
+
+.voucher-tabla th {
+  background: #eedf3a;
+  text-align: left;
+  font-size: 0.78rem;
+  padding: 0.5rem 0.6rem;
+}
+
+.voucher-tabla td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #e5e5e5;
+  vertical-align: top;
+}
+
+.voucher-tabla small { color: #777; }
+.voucher-num { text-align: right !important; white-space: nowrap; }
+
+.voucher-total {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 1rem;
+  margin-top: 0.9rem;
+  padding-top: 0.6rem;
+  border-top: 2px solid #1a1a1a;
+}
+
+.voucher-total strong { font-size: 1.4rem; }
+
+.voucher-pie { margin-top: 1.4rem; text-align: center; }
+.voucher-pie p { margin: 0 0 0.2rem; font-weight: 700; }
+.voucher-pie small { color: #888; font-size: 0.7rem; }
+
+/* ---------- Dentro del modal ---------- */
+.voucher-vista { max-height: 60vh; overflow: auto; }
+
+.voucher-estado { margin: 0.5rem 0 1rem; color: #666; }
+.voucher-estado-error { color: #c0392b; font-weight: 600; }
+
+.voucher-botones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.voucher-btn-secundario,
+.voucher-btn-pdf {
+  border-radius: 8px;
+  padding: 0.6rem 1.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.voucher-btn-secundario { background: #fff; border: 1px solid #ccc; color: #333; }
+.voucher-btn-secundario:hover { background: #f2f2f2; }
+.voucher-btn-pdf { background: #3fae5c; border: none; color: #fff; }
+.voucher-btn-pdf:hover { background: #359a4f; }
+.voucher-btn-pdf:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (max-width: 600px) {
+  .voucher-cabecera { flex-direction: column; }
+  .voucher-numero { text-align: left; }
+  .voucher-datos { grid-template-columns: 1fr; }
+}
+
+/* ---------- Impresión: solo el voucher, en una hoja A4 ---------- */
+.voucher-print { display: none; }
+
+@page { size: A4; margin: 15mm; }
+
+@media print {
+  body[data-imprimir="voucher"] #root { display: none !important; }
+  body[data-imprimir="voucher"] .voucher-print { display: block; }
+
+  body[data-imprimir="voucher"] .voucher-doc {
+    border: none;
+    padding: 0;
+    font-size: 11pt;
+  }
+
+  body[data-imprimir="voucher"] .voucher-tabla th,
+  body[data-imprimir="voucher"] .voucher-cancelada {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

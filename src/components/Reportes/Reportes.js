@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { listarVentasReporte, registrarReporte } from '../../services/reportesApi';
+import { imprimirDocumento } from '../../utils/imprimir';
 import {
   INDICADORES,
   aISO,
@@ -46,7 +47,7 @@ function Reportes({ usuario }) {
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState('');
   const [intento, setIntento] = useState(0);
-  const [avisoRegistro, setAvisoRegistro] = useState(null); // { tipo: 'ok' | 'error', texto }
+  const [avisoRegistro, setAvisoRegistro] = useState(null); 
 
   const errorPeriodo = !desde || !hasta
     ? 'Selecciona la fecha de inicio y la fecha de fin.'
@@ -56,7 +57,7 @@ function Reportes({ usuario }) {
 
   useEffect(() => {
     if (errorPeriodo) return undefined;
-    let vigente = true; // evita que una respuesta vieja pise a una más reciente
+    let vigente = true; 
     setCargando(true);
     setErrorCarga('');
     listarVentasReporte(inicioMesAnterior(desde), hasta)
@@ -107,9 +108,7 @@ function Reportes({ usuario }) {
   };
 
   // exportarPDF: primero registra el reporte en la base de datos (quién, cuándo y qué período)
-  // y luego imprime solo el documento (ver @media print en Reportes.css).
-  // En el cuadro de impresión se elige "Guardar como PDF".
-  // Si el registro falla, el PDF igual se genera y se avisa del problema.
+  // y luego exporta solo el documento pdf.
   const descargarPdf = async () => {
     if (errorPeriodo) return;
     setAvisoRegistro(null);
@@ -124,10 +123,7 @@ function Reportes({ usuario }) {
       setAvisoRegistro({ tipo: 'error', texto: `No se pudo registrar el reporte: ${err.message}` });
     }
 
-    const tituloOriginal = document.title;
-    document.title = `Reporte - ${indicador.titulo}`;
-    window.print();
-    document.title = tituloOriginal;
+    imprimirDocumento('reporte', `Reporte - ${indicador.titulo}`);
   };
 
   const sinVentas = kpis.cantidadPagadas === 0;
@@ -319,4 +315,5 @@ function Reportes({ usuario }) {
 }
 
 export default Reportes;
+
 

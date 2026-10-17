@@ -266,14 +266,13 @@
   .reportes-preview-header { flex-direction: column; align-items: stretch; }
 }
 
-/* Al imprimir / guardar como PDF solo sale el documento, sin menú ni tarjetas */
 @media print {
-  body * { visibility: hidden; }
+  body[data-imprimir="reporte"] * { visibility: hidden; }
 
-  .reportes-pdf,
-  .reportes-pdf * { visibility: visible; }
+  body[data-imprimir="reporte"] .reportes-pdf,
+  body[data-imprimir="reporte"] .reportes-pdf * { visibility: visible; }
 
-  .reportes-pdf {
+  body[data-imprimir="reporte"] .reportes-pdf {
     position: absolute;
     left: 0;
     top: 0;
@@ -282,65 +281,8 @@
     padding: 0;
   }
 
-  .reportes-tabla th {
+  body[data-imprimir="reporte"] .reportes-tabla th {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 }
-
-.reportes-vacio {
-  text-align: center !important;
-  color: #888 !important;
-  padding: 1.4rem !important;
-}
-
-.reportes-nota {
-  margin: 0.8rem 0 0;
-  font-size: 0.72rem;
-  color: #777;
-}
-
-.reportes-kpi-valor { overflow-wrap: anywhere; }
-
-.reportes-cargando {
-  margin: 0 0 1rem;
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.reportes-banner-error {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  background-color: #fdecea;
-  border: 1px solid #f5c2bd;
-  color: #a93226;
-  border-radius: 8px;
-  padding: 0.7rem 1rem;
-  margin-bottom: 1rem;
-  font-size: 0.88rem;
-}
-
-.reportes-reintentar {
-  background: #fff;
-  border: 1px solid #a93226;
-  color: #a93226;
-  border-radius: 6px;
-  padding: 0.3rem 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.reportes-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.reportes-aviso {
-  margin: 0 0 1rem;
-  padding: 0.55rem 0.9rem;
-  border-radius: 6px;
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.reportes-aviso-ok { background: #e8f5ec; color: #1e7a3a; }
-.reportes-aviso-error { background: #fdecea; color: #a93226; }

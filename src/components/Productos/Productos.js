@@ -9,11 +9,18 @@ import './Productos.css';
 const PRODUCTO_VACIO = { nombre: '', marca: '', estado: 'Disponible', precio: '' };
 
 // El listado de productos vive en Home para compartirlo con el módulo de Ventas.
-function Productos({ productos, setProductos, cargando, errorCarga, onReintentar }) {
+function Productos({
+  productos,
+  setProductos,
+  cargando,
+  errorCarga,
+  onReintentar,
+  puedeGestionar = false,
+}) {
+  const columnas = puedeGestionar ? 6 : 5;
   const [busqueda, setBusqueda] = useState('');
-
   const [modalAbierto, setModalAbierto] = useState(false);
-  const [productoEditar, setProductoEditar] = useState(null); // null = "nuevo producto"
+  const [productoEditar, setProductoEditar] = useState(null); 
   const [form, setForm] = useState(PRODUCTO_VACIO);
   const [error, setError] = useState('');
   const [guardando, setGuardando] = useState(false);
@@ -100,9 +107,11 @@ function Productos({ productos, setProductos, cargando, errorCarga, onReintentar
         <button className="productos-btn-catalogo" type="button">
           Catálogo
         </button>
-        <button className="productos-btn-nuevo" type="button" onClick={abrirNuevo}>
-          Nuevo Producto
-        </button>
+        {puedeGestionar && (
+          <button className="productos-btn-nuevo" type="button" onClick={abrirNuevo}>
+            Nuevo Producto
+          </button>
+        )}
       </div>
 
       {errorCarga && (
@@ -133,7 +142,7 @@ function Productos({ productos, setProductos, cargando, errorCarga, onReintentar
               <th>Marca</th>
               <th>Precio</th>
               <th>Estado</th>
-              <th className="productos-col-acciones"></th>
+              {puedeGestionar && <th className="productos-col-acciones"></th>}
             </tr>
           </thead>
           <tbody>
@@ -152,17 +161,19 @@ function Productos({ productos, setProductos, cargando, errorCarga, onReintentar
                     {p.estado}
                   </span>
                 </td>
-                <td className="productos-col-acciones">
-                  <button className="productos-btn-editar" type="button" onClick={() => abrirEditar(p)}>
-                    Editar
-                  </button>
-                </td>
+                {puedeGestionar && (
+                  <td className="productos-col-acciones">
+                    <button className="productos-btn-editar" type="button" onClick={() => abrirEditar(p)}>
+                      Editar
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
 
             {cargando && (
               <tr>
-                <td colSpan={6} className="productos-vacio">
+                <td colSpan={columnas} className="productos-vacio">
                   Cargando productos...
                 </td>
               </tr>
@@ -170,7 +181,7 @@ function Productos({ productos, setProductos, cargando, errorCarga, onReintentar
 
             {!cargando && !errorCarga && productosFiltrados.length === 0 && (
               <tr>
-                <td colSpan={6} className="productos-vacio">
+                <td colSpan={columnas} className="productos-vacio">
                   No se encontraron productos con ese código.
                 </td>
               </tr>

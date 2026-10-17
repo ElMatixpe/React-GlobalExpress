@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Login from './pages/Login/Login';
 import Home from './pages/Home/Home';
+import { peticion, guardarToken, registrarAlExpirarSesion } from './services/api';
 import './App.css';
 
 function App() {
@@ -11,8 +12,19 @@ function App() {
   };
 
   const handleCerrarSesion = () => {
+    // Avisa al servidor para que invalide el token (si falla, igual se cierra la sesión aquí)
+    peticion('/usuarios/logout', { metodo: 'POST' }).catch(() => {});
+    guardarToken(null);
     setUsuarioLogueado(null);
   };
+
+  // Si el servidor responde 401 (sesión vencida), se vuelve al login
+  useEffect(() => {
+    registrarAlExpirarSesion(() => {
+      guardarToken(null);
+      setUsuarioLogueado(null);
+    });
+  }, []);
 
   if (!usuarioLogueado) {
     return <Login onLoginSuccess={handleLoginSuccess} />;

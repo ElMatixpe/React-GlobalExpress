@@ -60,3 +60,16 @@
     flex-direction: column;
   }
 }
+
+.home-restringido {
+  max-width: 480px;
+  margin: 3rem auto;
+  text-align: center;
+  color: #444;
+}
+
+.home-restringido h2 {
+  margin: 0 0 0.5rem;
+  color: #1a1a1a;
+}
+

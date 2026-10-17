@@ -1,27 +1,12 @@
-// Cálculos de los reportes e indicadores. Son funciones puras: reciben la lista de ventas
-// y devuelven números / filas. No saben de dónde vienen los datos (mock o backend).
-//
-// Forma esperada de cada venta:
-//   { fecha: '2026-07-03' (o '2026-07-03T10:15:00'), estado: 'Pagado' | 'Cancelado', total: 25.5,
-//     detalles: [{ codigo: 'P001', nombre: 'Coca Cola 1L', marca: 'Coca-Cola', cantidad: 2, subtotal: 11 }] }
-//
+// Cálculos de los reportes e indicadores. Reciben la lista de ventas y devuelven números / filas.
 // Solo las ventas "Pagado" cuentan como ingresos. Las "Cancelado" se informan aparte.
-//
-// Correspondencia con la clase Reporte del diagrama UML:
-//   calcularPorcentajeVentasMes      -> generarReporte(1, ...)
-//   calcularParticipacionProducto    -> generarReporte(2, ...)
-//   calcularVariacionMensual         -> generarReporte(3, ...)
-//   calcularPromedioVentaOperacion   -> generarReporte(4, ...)
 //   calcularTotalVentasMes           -> totales por mes (indicadores 1 y 4) y "ingresos" en calcularKpis
 //   obtenerProductoTop               -> productoTop en calcularKpis
 //   exportarPDF                      -> botón "Descargar PDF" del módulo
-
 export const NOMBRES_MES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Setiembre', 'Octubre', 'Noviembre', 'Diciembre',
 ];
-
-// ---------- Redondeo y formato ----------
 
 // Redondea "como en la escuela" (9.225 -> 9.23). Evita el error de coma flotante
 // de Math.round(n * 100) / 100 y de toFixed (que daban 9.22).
@@ -39,8 +24,7 @@ export const porcentaje = (n) => `${redondear(n).toFixed(2)}%`;
 
 const variacionTexto = (n) => `${redondear(n) > 0 ? '+' : ''}${redondear(n).toFixed(2)}%`;
 
-// ---------- Fechas (siempre texto 'AAAA-MM-DD' para evitar problemas de zona horaria) ----------
-
+// Fechas (siempre texto 'AAAA-MM-DD' para evitar problemas de zona horaria) 
 export const aISO = (fecha) => {
   const mm = String(fecha.getMonth() + 1).padStart(2, '0');
   const dd = String(fecha.getDate()).padStart(2, '0');
@@ -52,14 +36,14 @@ export const fechaCorta = (iso) => {
   return `${d}/${m}/${a}`;
 };
 
-const mesDe = (iso) => iso.slice(0, 7); // '2026-07'
+const mesDe = (iso) => iso.slice(0, 7); 
 
 const etiquetaMes = (ym) => {
   const [a, m] = ym.split('-');
   return `${NOMBRES_MES[Number(m) - 1]} ${a}`;
 };
 
-// Primer día del mes anterior a la fecha dada: '2026-08-15' -> '2026-07-01'
+// Primer día del mes anterior a la fecha dada
 export const inicioMesAnterior = (iso) => `${mesAnteriorDe(mesDe(iso))}-01`;
 
 const mesAnteriorDe = (ym) => {
@@ -101,8 +85,7 @@ const ventanaDelMes = (ym, desde, hasta) => {
   return [primero, ultimo];
 };
 
-// ---------- Filtros y totales ----------
-
+// Filtros y totales
 export const filtrarPorPeriodo = (ventas, desde, hasta) =>
   ventas.filter((v) => {
     const dia = v.fecha.slice(0, 10);
@@ -112,7 +95,7 @@ export const filtrarPorPeriodo = (ventas, desde, hasta) =>
 const pagadas = (ventas) => ventas.filter((v) => v.estado === 'Pagado');
 const suma = (ventas) => ventas.reduce((acc, v) => acc + Number(v.total), 0);
 
-// Totales por mes: { '2026-07': { total, transacciones } } solo con ventas pagadas
+// Totales por mes: solo con ventas pagadas
 const totalesPorMes = (ventas) => {
   const mapa = {};
   pagadas(ventas).forEach((v) => {
@@ -124,8 +107,7 @@ const totalesPorMes = (ventas) => {
   return mapa;
 };
 
-// ---------- Tarjetas: ingresos, máximo, mínimo, promedio, canceladas ----------
-
+//Tarjetas: ingresos, máximo, mínimo, promedio, canceladas 
 export function calcularKpis(ventasPeriodo) {
   const ok = pagadas(ventasPeriodo);
   const canceladas = ventasPeriodo.filter((v) => v.estado === 'Cancelado');
@@ -161,8 +143,7 @@ export function calcularKpis(ventasPeriodo) {
   };
 }
 
-// ---------- Indicadores ----------
-
+//Indicadores
 const NOTA_PARCIAL = '* Mes parcial: solo incluye las ventas dentro del período seleccionado.';
 
 export const INDICADORES = [
@@ -280,3 +261,4 @@ export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde
     }),
   };
 }
+
