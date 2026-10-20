@@ -6,6 +6,7 @@ import './Login.css';
 import logo from '../../Imagenes/logo.jpg';
 import { UserIconLogin, LockIcon, EyeIcon, EyeOffIcon } from '../../components/Icons/icons';
 
+// Pantalla de login
 function Login({ onLoginSuccess }) {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');

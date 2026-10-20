@@ -12,13 +12,13 @@ function App() {
   };
 
   const handleCerrarSesion = () => {
-    // Avisa al servidor para que invalide el token (si falla, igual se cierra la sesión aquí)
+    // Avisa al servidor para que invalide el token, se cierra la sesion
     peticion('/usuarios/logout', { metodo: 'POST' }).catch(() => {});
     guardarToken(null);
     setUsuarioLogueado(null);
   };
 
-  // Si el servidor responde 401 (sesión vencida), se vuelve al login
+  // Si el servidor responde 401 (sesion vencida), se vuelve al login
   useEffect(() => {
     registrarAlExpirarSesion(() => {
       guardarToken(null);

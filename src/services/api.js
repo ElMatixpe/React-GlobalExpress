@@ -1,4 +1,4 @@
-// Punto único de comunicación con el backend Spring Boot.
+// Punto único de comunicación con el backend Spring Boot
 export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
 export class ErrorApi extends Error {
@@ -14,7 +14,7 @@ export const guardarToken = (nuevo) => {
   token = nuevo;
 };
 
-// App.js registra aquí qué hacer cuando el servidor dice que la sesión ya no es válida (401)
+// App.js registra aquí qué hacer cuando el servidor dice que la sesión ya no es valida
 let alExpirarSesion = null;
 export const registrarAlExpirarSesion = (funcion) => {
   alExpirarSesion = funcion;
@@ -40,7 +40,7 @@ export async function peticion(ruta, { metodo = 'GET', cuerpo } = {}) {
 
   const datos = await res.json().catch(() => null);
   if (!res.ok) {
-    // 401 fuera del login = el token venció o el backend se reinició: volver a la pantalla de login
+    // fuera del login = el token venció o el backend se reinicio: vuelve a la pantalla de login
     if (res.status === 401 && ruta !== '/usuarios/login' && alExpirarSesion) {
       alExpirarSesion();
     }

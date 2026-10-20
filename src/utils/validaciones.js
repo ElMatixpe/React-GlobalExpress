@@ -3,8 +3,7 @@
 
 const LETRAS = 'A-Za-zÁÉÍÓÚÜÑáéíóúüñ';
 
-// Solo letras (con tildes y ñ), espacios, apóstrofe, punto y guion. Sin números.
-// Ej.: "Adrian Ortiz", "María O'Brien", "Ana-Lucía"
+// Solo letras (con tildes y ñ), espacios, punto y guion. Sin números.
 export const soloNombre = (valor, max = 50) =>
   valor
     .replace(new RegExp(`[^${LETRAS}\\s'.-]`, 'g'), '')
@@ -13,7 +12,6 @@ export const soloNombre = (valor, max = 50) =>
     .slice(0, max);
 
 // Nombre de producto o marca: letras, números, espacios y . - & ' % /
-// Ej.: "Coca Cola 1L", "Big Cola 1.5L", "Coca-Cola"
 export const textoProducto = (valor, max = 50) =>
   valor
     .replace(new RegExp(`[^${LETRAS}0-9\\s.&'%/-]`, 'g'), '')
