@@ -4,7 +4,8 @@ import Voucher from './Voucher';
 import { SearchIcon } from '../Icons/icons';
 import { soloNombre, soloEnteros, codigoProducto } from '../../utils/validaciones';
 import { peticion } from '../../services/api';
-import { desdeApiVenta } from '../../services/ventasApi';
+import { desdeApiVenta, listarDetallesVenta } from '../../services/ventasApi';
+import { puedeEliminarVentas } from '../../utils/permisos';
 import './Ventas.css';
 
 const METODOS_PAGO = ['Efectivo', 'Tarjeta', 'Yape', 'Plin'];
@@ -35,7 +36,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
       });
   }, [ventas, busqueda, filtro]);
 
-  // Nueva venta
+  //Nueva venta
   const [cliente, setCliente] = useState('');
   const [metodoPago, setMetodoPago] = useState('Tarjeta');
   const [carrito, setCarrito] = useState([]);
@@ -46,7 +47,89 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
   const [guardando, setGuardando] = useState(false);
   const [voucherVenta, setVoucherVenta] = useState(null); // venta cuyo voucher se está viendo
 
-  //Modal agregar producto 
+  //Cancelar una venta ya registrada (eliminación lógica) 
+  const [ventaPorCancelar, setVentaPorCancelar] = useState(null);
+  const [errorCancelacion, setErrorCancelacion] = useState('');
+
+  const abrirCancelacion = (venta) => {
+    setErrorCancelacion('');
+    setVentaPorCancelar(venta);
+  };
+
+  // PUT /api/ventas/{id}/cancelar: la venta no se borra, pasa de Pagado a Cancelado
+  const cancelarRegistrada = async () => {
+    setGuardando(true);
+    setErrorCancelacion('');
+    try {
+      const respuesta = await peticion(`/ventas/${ventaPorCancelar.id}/cancelar`, { metodo: 'PUT' });
+      const actualizada = desdeApiVenta(respuesta);
+      setVentas((actual) => actual.map((v) => (v.id === actualizada.id ? actualizada : v)));
+      setVentaDetalle((actual) => (actual && actual.id === actualizada.id ? actualizada : actual));
+      setVentaPorCancelar(null);
+      setBusqueda('');
+      setFiltro('cancelado'); 
+    } catch (err) {
+      setErrorCancelacion(err.message);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  //Eliminar una venta cancelada de forma permanente (solo Administrador)
+  const [ventaPorEliminar, setVentaPorEliminar] = useState(null);
+  const [confirmacionTexto, setConfirmacionTexto] = useState('');
+  const [errorEliminacion, setErrorEliminacion] = useState('');
+  const puedeEliminar = puedeEliminarVentas(usuario?.rol);
+
+  const abrirEliminacion = (venta) => {
+    setErrorEliminacion('');
+    setConfirmacionTexto('');
+    setVentaPorEliminar(venta);
+  };
+
+  const cerrarEliminacion = () => {
+    if (!guardando) setVentaPorEliminar(null);
+  };
+
+  // DELETE /api/ventas/{id}: borra la venta y su detalle de la base de datos. 
+  const eliminarDefinitivo = async () => {
+    setGuardando(true);
+    setErrorEliminacion('');
+    try {
+      await peticion(`/ventas/${ventaPorEliminar.id}`, { metodo: 'DELETE' });
+      const idEliminada = ventaPorEliminar.id;
+      setVentas((actual) => actual.filter((v) => v.id !== idEliminada));
+      setVentaDetalle((actual) => (actual && actual.id === idEliminada ? null : actual));
+      setVoucherVenta((actual) => (actual && actual.id === idEliminada ? null : actual));
+      setVentaPorEliminar(null);
+    } catch (err) {
+      setErrorEliminacion(err.message);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  //Detalle de una venta 
+  const [ventaDetalle, setVentaDetalle] = useState(null);
+  const [detalles, setDetalles] = useState([]);
+  const [cargandoDetalle, setCargandoDetalle] = useState(false);
+  const [errorDetalle, setErrorDetalle] = useState('');
+
+  const verDetalle = async (venta) => {
+    setVentaDetalle(venta);
+    setDetalles([]);
+    setErrorDetalle('');
+    setCargandoDetalle(true);
+    try {
+      setDetalles(await listarDetallesVenta(venta.id));
+    } catch (err) {
+      setErrorDetalle(err.message);
+    } finally {
+      setCargandoDetalle(false);
+    }
+  };
+
+  //Modal agregar producto
   const [modalProductos, setModalProductos] = useState(false);
   const [busquedaProd, setBusquedaProd] = useState('');
   const [cantidades, setCantidades] = useState({}); // { P001: 2 }
@@ -75,7 +158,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     setVista('historial');
   };
 
-  // Si ya hay productos en el carrito se pide confirmación; si no, simplemente se sale.
+  //Si ya hay productos en el carrito se pide confirmación; si no, simplemente se sale.
   const cancelarVenta = () => {
     if (carrito.length === 0) {
       limpiarNuevaVenta();
@@ -166,7 +249,6 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     setCarrito((actual) => actual.map((i) => (i.codigo === codigo ? { ...i, cantidad } : i)));
   };
 
-  // Al salir del campo, una cantidad vacía o 0 vuelve a 1.
   const normalizarCantidad = (codigo) => {
     setCarrito((actual) =>
       actual.map((i) => (i.codigo === codigo && !(i.cantidad >= 1) ? { ...i, cantidad: 1 } : i))
@@ -265,14 +347,14 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
             <table className="ventas-table">
               <thead>
                 <tr>
-                  <th>Codigo</th>
-                  <th>Fecha</th>
-                  <th>Cliente</th>
-                  <th>Vendedor</th>
-                  <th>Metodo de Pago</th>
-                  <th>Total</th>
-                  <th>Estado</th>
-                  <th>Voucher</th>
+                  <th>Codigo<small>venta</small></th>
+                  <th>Fecha<small>venta</small></th>
+                  <th>Cliente<small>venta</small></th>
+                  <th>Vendedor<small>usuario</small></th>
+                  <th>Metodo de Pago<small>venta</small></th>
+                  <th>Total<small>venta</small></th>
+                  <th>Estado<small>venta</small></th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -293,14 +375,41 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                         {v.estado}
                       </span>
                     </td>
-                    <td>
-                      <button
-                        type="button"
-                        className="ventas-btn-voucher"
-                        onClick={() => setVoucherVenta(v)}
-                      >
-                        Ver voucher
-                      </button>
+                    <td className="ventas-acciones">
+                      <div className="ventas-acciones-fila">
+                        <button
+                          type="button"
+                          className="ventas-btn-detalle"
+                          onClick={() => verDetalle(v)}
+                        >
+                          Ver detalle
+                        </button>
+                        <button
+                          type="button"
+                          className="ventas-btn-voucher"
+                          onClick={() => setVoucherVenta(v)}
+                        >
+                          Voucher
+                        </button>
+                        {v.estado === 'Pagado' && (
+                          <button
+                            type="button"
+                            className="ventas-btn-anular"
+                            onClick={() => abrirCancelacion(v)}
+                          >
+                            Cancelar venta
+                          </button>
+                        )}
+                        {v.estado === 'Cancelado' && puedeEliminar && (
+                          <button
+                            type="button"
+                            className="ventas-btn-eliminar"
+                            onClick={() => abrirEliminacion(v)}
+                          >
+                            Eliminar definitivamente
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -323,6 +432,75 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
               </tbody>
             </table>
           </div>
+
+          {ventaDetalle && (
+            <section className="ventas-detalle">
+              <div className="ventas-detalle-header">
+                <h3>Detalle de la venta {ventaDetalle.codigo}</h3>
+                <button
+                  type="button"
+                  className="ventas-btn-cancelar"
+                  onClick={() => setVentaDetalle(null)}
+                >
+                  Cerrar detalle
+                </button>
+              </div>
+
+              {errorDetalle && (
+                <p className="ventas-error" role="alert">
+                  {errorDetalle}
+                </p>
+              )}
+
+              <div className="ventas-table-container">
+                <table className="ventas-table">
+                  <thead>
+                    <tr>
+                      <th>Código<small>producto</small></th>
+                      <th>Producto<small>producto</small></th>
+                      <th>Marca<small>producto</small></th>
+                      <th>Cantidad<small>detalle_venta</small></th>
+                      <th>Precio unit.<small>detalle_venta</small></th>
+                      <th>Subtotal<small>detalle_venta</small></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {detalles.map((d) => (
+                      <tr key={d.id}>
+                        <td>{d.codigo}</td>
+                        <td>{d.nombre}</td>
+                        <td>{d.marca}</td>
+                        <td>{d.cantidad}</td>
+                        <td>{moneda(d.precioUnitario)}</td>
+                        <td>{moneda(d.subtotal)}</td>
+                      </tr>
+                    ))}
+
+                    {cargandoDetalle && (
+                      <tr>
+                        <td colSpan={6} className="ventas-vacio">
+                          Cargando detalle...
+                        </td>
+                      </tr>
+                    )}
+
+                    {!cargandoDetalle && !errorDetalle && detalles.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="ventas-vacio">
+                          Esta venta no tiene productos registrados.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="ventas-detalle-total">
+                <span>Total de la venta:</span>
+                <strong>{moneda(ventaDetalle.total)}</strong>
+              </div>
+            </section>
+          )}
         </>
       )}
 
@@ -580,6 +758,88 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                 Aceptar
               </button>
             </div>
+          </div>
+        </Modal>
+      )}
+
+      {ventaPorCancelar && (
+        <Modal titulo="Cancelar venta" onCerrar={() => setVentaPorCancelar(null)}>
+          <p className="ventas-cancelar-texto">
+            ¿Seguro que deseas cancelar la venta <strong>{ventaPorCancelar.codigo}</strong> de{' '}
+            <strong>{ventaPorCancelar.cliente}</strong> por <strong>{moneda(ventaPorCancelar.total)}</strong>?
+            La venta no se borra: quedará como <strong>Cancelado</strong> en el historial y dejará de
+            contar como ingreso.
+          </p>
+          {errorCancelacion && (
+            <p className="ventas-error" role="alert">
+              {errorCancelacion}
+            </p>
+          )}
+          <div className="ventas-botones-finales">
+            <button
+              className="ventas-btn-cancelar"
+              type="button"
+              onClick={() => setVentaPorCancelar(null)}
+            >
+              Volver
+            </button>
+            <button
+              className="ventas-btn-peligro"
+              type="button"
+              onClick={cancelarRegistrada}
+              disabled={guardando}
+            >
+              {guardando ? 'Cancelando...' : 'Sí, cancelar venta'}
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {ventaPorEliminar && (
+        <Modal titulo="Eliminar venta definitivamente" onCerrar={cerrarEliminacion}>
+          <div className="ventas-alerta-eliminar" role="alert">
+            <strong>⚠ Esta acción es permanente y no se puede deshacer.</strong>
+            <p>
+              Se borrará de la base de datos la venta <strong>{ventaPorEliminar.codigo}</strong> de{' '}
+              <strong>{ventaPorEliminar.cliente}</strong> por{' '}
+              <strong>{moneda(ventaPorEliminar.total)}</strong>, junto con todos los productos de su
+              detalle. Dejará de aparecer en el historial y no podrá recuperarse.
+            </p>
+          </div>
+          <label className="ventas-campo ventas-confirmar-campo">
+            <span>
+              Para confirmar, escribe el código <strong>{ventaPorEliminar.codigo}</strong>:
+            </span>
+            <input
+              type="text"
+              value={confirmacionTexto}
+              onChange={(e) => setConfirmacionTexto(codigoProducto(e.target.value, 5))}
+              placeholder={ventaPorEliminar.codigo}
+              autoFocus
+            />
+          </label>
+          {errorEliminacion && (
+            <p className="ventas-error" role="alert">
+              {errorEliminacion}
+            </p>
+          )}
+          <div className="ventas-botones-finales">
+            <button
+              className="ventas-btn-cancelar"
+              type="button"
+              onClick={cerrarEliminacion}
+              disabled={guardando}
+            >
+              Volver
+            </button>
+            <button
+              className="ventas-btn-peligro"
+              type="button"
+              onClick={eliminarDefinitivo}
+              disabled={guardando || confirmacionTexto.trim().toUpperCase() !== ventaPorEliminar.codigo}
+            >
+              {guardando ? 'Eliminando...' : 'Eliminar para siempre'}
+            </button>
           </div>
         </Modal>
       )}

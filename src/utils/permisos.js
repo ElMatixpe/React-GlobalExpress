@@ -1,6 +1,4 @@
-// Permisos por rol (según la clase Usuario / Administrador / Cajero del diagrama UML).
-// Para cambiar quién puede ver qué, basta con editar esta tabla.
-
+// Permisos por rol 
 export const SECCIONES_POR_ROL = {
   Administrador: ['inicio', 'ventas', 'productos', 'usuarios', 'reportes'],
   Cajero: ['inicio', 'ventas', 'productos'],
@@ -12,3 +10,6 @@ export const puedeVerSeccion = (rol, seccion) =>
 
 // Crear y editar productos: solo el Administrador. El Cajero únicamente los consulta.
 export const puedeGestionarProductos = (rol) => rol === 'Administrador';
+
+// Eliminar de forma permanente una venta cancelada: solo el Administrador.
+export const puedeEliminarVentas = (rol) => rol === 'Administrador';
